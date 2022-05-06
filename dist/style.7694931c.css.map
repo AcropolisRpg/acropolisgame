@@ -1,0 +1,1 @@
+{"version":3,"sources":["style.css"],"names":[],"mappings":"AAAA,EACE,qBACF,CAEA,KACE,WACF,CAEA,MACE,qBACF","file":"style.7694931c.css","sourceRoot":"..\\public","sourcesContent":["* {\r\n  box-sizing: border-box;\r\n}\r\n\r\nbody {\r\n  padding: 1em;\r\n}\r\n\r\n#game {\r\n  border: 1px solid #333;\r\n}\r\n"]}
