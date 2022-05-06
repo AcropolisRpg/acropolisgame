@@ -6,7 +6,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-app.use(express.static('dist'));
+app.use(express.static(__dirname + 'dist'));
 dotenv.config();
 
 const frameRate = 1000 / 60;
