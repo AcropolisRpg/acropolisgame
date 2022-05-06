@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import io from 'socket.io-client'
 import ball from './../spikedballa.png'
 import cooldownTimer from '../../utils/cooldownTimer'
-const socket = io('http://localhost:1234')
+const socket = io('https://stealth-magenta-lady.glitch.me:1234')
 const fpsEl = document.querySelector("#fps");
 const onlineEl = document.querySelector("#online");
 const worldX = document.querySelector("#worldX");
