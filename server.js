@@ -6,10 +6,10 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-app.use(express.static(__dirname + 'dist'));
+app.use(express.static('dist'));
 dotenv.config();
 
-const frameRate = 1000 / 60;
+const frameRate = 1000 / 30;
 const canvas = { width: 700, height: 700 };
 const boxes = 0;
 const playered = 0;
