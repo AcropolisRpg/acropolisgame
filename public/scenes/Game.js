@@ -1,7 +1,6 @@
 import Phaser from 'phaser'
 import io from 'socket.io-client'
 import ball from './../spikedballa.png'
-import _, { transform } from 'lodash'
 import cooldownTimer from '../../utils/cooldownTimer'
 const socket = io('http://localhost:1234')
 const fpsEl = document.querySelector("#fps");
