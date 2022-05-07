@@ -10,7 +10,7 @@ app.use(express.static('dist'));
 dotenv.config();
 
 const frameRate = 1000 / 30;
-const canvas = { width: 700, height: 700 };
+const canvas = { width: 10000, height: 10000 };
 const boxes = 0;
 const playered = 0;
 const boxSize = 20;
@@ -88,7 +88,7 @@ setInterval(() => {
   io.emit('update state', {
     //boxes: entities.boxes.map(toVertices),
     walls: entities.walls.map(toVertices),
-    players: entities.players.map(player=> ({ position: player.transform.position,id:player.id})),
+    players: entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition})),
     online,
     fps,
   });
@@ -102,7 +102,7 @@ setInterval(() => {
     const normalizedDelta = Matter.Vector.normalise(deltaVector);
     let forceVector = Matter.Vector.mult(normalizedDelta, force);
     const target = Matter.Vector.sub( player.transform.position, forceVector);
-    if (getDistance(player.mousePosition,  player.transform.position) > 15) {
+    if (getDistance(player.mousePosition,  player.transform.position) > 20) {
       // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
       player.transform.x = Math.round(lerp( player.transform.position.x,target.x, dt));
       player.transform.y = Math.round(lerp( player.transform.position.y,target.y, dt));

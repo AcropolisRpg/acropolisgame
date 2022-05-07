@@ -2,7 +2,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "parcel": " parcel build public/index.html"
+    "parcel": " parcel watch public/index.html"
   },
   "dependencies": {
     "dotenv": "^16.0.0",

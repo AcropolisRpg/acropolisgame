@@ -111,6 +111,8 @@ END Glitch hello-app default styles
 ******************************************************************************/
 
 body {
+  padding: 0;
+  margin: 0;
   font-family: HK Grotesk;
   background-color: var(--color-bg);
 }
