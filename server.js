@@ -96,7 +96,7 @@ setInterval(() => {
   });
 
   entities.players.forEach((player) => {
-    let force = 10 * dt;
+    let force = 7 * dt;
     const deltaVector = Matter.Vector.sub(
       player.transform.position,
       player.mousePosition
