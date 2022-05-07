@@ -64,6 +64,7 @@ const toVertices = (e) => e.vertices.map(({ x, y }) => ({ x, y }));
 const player = entities.player;
 
 let lastUpdate = Date.now();
+let lastDelta= Date.now();
 let dt;
 let fuerzaX = 100;
 
@@ -80,10 +81,13 @@ function lerp (start, end, amt){
 setInterval(() => {
   let now = Date.now();
   dt = (now - lastUpdate) / frameRate;
+  // console.log('correction', dt / lastDelta)
+  let correction =  dt / lastDelta
+  lastDelta = dt
   //console.log('dt',dt, now, lastUpdate)
   //console.log('fps',1000/(now - lastUpdate))
   let fps = 1000 / (now - lastUpdate);
-  console.log(now - lastUpdate, dt, frameRate, fps)
+  // console.log(now - lastUpdate, dt, frameRate, fps)
   lastUpdate = now;
 
   
@@ -111,7 +115,7 @@ setInterval(() => {
       Matter.Body.setPosition(player.transform, target);
     }
   });
-  Matter.Engine.update(engine, dt);
+  Matter.Engine.update(engine, dt, correction);
 }, frameRate);
 
 //Each connection will manage his own data
