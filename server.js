@@ -13,7 +13,7 @@ const frameRate = 1000 / 30;
 const canvas = { width: 10000, height: 10000 };
 const boxes = 0;
 const playered = 0;
-const boxSize = 20;
+const playerSize = 15;
 const wallThickness = 20;
 let online = 0;
 
@@ -22,9 +22,9 @@ const entities = {
   boxes: [...Array(boxes)].map(() =>
     Matter.Bodies.rectangle(
       Math.random() * canvas.width,
-      boxSize,
-      Math.random() * boxSize + boxSize,
-      Math.random() * boxSize + boxSize
+      playerSize,
+      Math.random() * playerSize + playerSize,
+      Math.random() * playerSize + playerSize
     )
   ),
   walls: [
@@ -83,8 +83,10 @@ setInterval(() => {
   //console.log('dt',dt, now, lastUpdate)
   //console.log('fps',1000/(now - lastUpdate))
   let fps = 1000 / (now - lastUpdate);
+  console.log(now - lastUpdate, dt, frameRate, fps)
   lastUpdate = now;
-  Matter.Engine.update(engine, frameRate);
+
+  
   io.emit('update state', {
     //boxes: entities.boxes.map(toVertices),
     walls: entities.walls.map(toVertices),
@@ -109,6 +111,7 @@ setInterval(() => {
       Matter.Body.setPosition(player.transform, target);
     }
   });
+  Matter.Engine.update(engine, dt);
 }, frameRate);
 
 //Each connection will manage his own data
@@ -118,7 +121,7 @@ io.on('connection', (socket) => {
   let playerTransform = Matter.Bodies.circle(
     canvas.width/2,
     canvas.height/2,
-    Math.random() * boxSize + boxSize
+    Math.random() * playerSize + playerSize
   )
   // Here we create the player for the client that is requesting conection to join the game
   const newPlayer = {

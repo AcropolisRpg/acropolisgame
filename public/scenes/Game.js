@@ -85,7 +85,7 @@ export default class Game extends Phaser.Scene {
     });
     const tileset = map.addTilesetImage('atlas', 'atlas');
     const layer = map.createLayer('layertati', tileset, 0, 0);
-    layer.setScale(5, 5);
+    layer.setScale(3, 3);
 
     this.pointerado = this.input.activePointer;
     this.instance1 = cooldownTimer(5000);
@@ -141,7 +141,7 @@ export default class Game extends Phaser.Scene {
           this.allPlayers[player.id] = {
             sprite: this.add
               .sprite(player.position.x, player.position.y, 'playerSprite')
-              .setScale(5, 5),
+              .setScale(3, 3),
             playerId: player.id,
             transform: {
               x: player.position.x,
