@@ -67,7 +67,7 @@ export default class Game extends Phaser.Scene {
     this.anims.create(running);
     const idle = {
       key: 'idle',
-      frames: this.anims.generateFrameNumbers('playerSprite',{ frames: [ 0]}),
+      frames: this.anims.generateFrameNumbers('playerSprite', { frames: [0] }),
       frameRate: 15,
       repeat: -1,
     };
@@ -113,7 +113,11 @@ export default class Game extends Phaser.Scene {
     this.input.mouse.disableContextMenu();
     this.input.on('pointerup', (pointer) => {
       if (pointer.leftButtonReleased()) {
-        if (this.allPlayers[this.currentPlayerId].sprite && this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim?.key !== 'running' ) {
+        if (
+          this.allPlayers[this.currentPlayerId].sprite &&
+          this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim
+            ?.key !== 'running'
+        ) {
           this.allPlayers[this.currentPlayerId].sprite.play({ key: 'running' });
           if (
             this.allPlayers[this.currentPlayerId].sprite.x <
@@ -124,26 +128,40 @@ export default class Game extends Phaser.Scene {
             this.allPlayers[this.currentPlayerId].sprite.flipX = true;
           }
         }
-        const target = { x: Math.round(pointer.worldX), y: Math.round(pointer.worldY) }
-        this.allPlayers[this.currentPlayerId].target = target
+        const target = {
+          x: Math.round(pointer.worldX),
+          y: Math.round(pointer.worldY),
+        };
+        this.allPlayers[this.currentPlayerId].target = target;
         socket.emit('player click', target);
         // console.log('allplayers',this.allPlayers)
       }
     });
     this.input.on('pointerdown', (pointer) => {
       if (pointer.leftButtonReleased()) {
-        const target = { x: pointer.worldX, y: pointer.worldY }
-        this.allPlayers[this.currentPlayerId].target = target
+        const target = { x: pointer.worldX, y: pointer.worldY };
+        this.allPlayers[this.currentPlayerId].target = target;
       }
     });
-    this.playerInputClient = {}
-    this.playerInputClient.keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
-    this.playerInputClient.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.playerInputClient.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-    this.playerInputClient.keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-    this.playerInputClient.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.playerInputClient.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
-  
+    this.playerInputClient = {};
+    this.playerInputClient.keyQ = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.Q
+    );
+    this.playerInputClient.keyW = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.W
+    );
+    this.playerInputClient.keyE = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.E
+    );
+    this.playerInputClient.keyR = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.R
+    );
+    this.playerInputClient.keyD = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.D
+    );
+    this.playerInputClient.keyF = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.F
+    );
 
     socket.on('update state', ({ players, walls, online, fps }) => {
       let now = Date.now();
@@ -168,21 +186,41 @@ export default class Game extends Phaser.Scene {
               y: player.position.y,
             },
             target: { x: player.position.x, y: player.position.y },
-            skills: null
+            skills: null,
           };
           // console.log('el carjo', this.allPlayers[player.id].sprite);
           // this.cameras.main.startFollow(this.allPlayers[player.id].sprite)
         }
-       
+
         // if(this.instance1.remainigTime() === 5000) {
-          if (player.skills?.y && player.skills?.x && !this.allPlayers?.[player.id].skills) {
-            console.log('skills',this.allPlayers?.[player.id].skills);
-            this.allPlayers[player.id].skills = this.add
-              .sprite(player.skills.x, player.skills.y, 'ball')
-          }
+        if (
+          player.skills?.y &&
+          player.skills?.x &&
+          !this.allPlayers?.[player.id].skills
+        ) {
+          this.allPlayers[player.id].skills = this.add.sprite(
+            player.skills.x,
+            player.skills.y,
+            'ball'
+          );
+        } else if (
+          player.skills === null &&
+          this.allPlayers?.[player.id].skills
+        ) {
+          this.allPlayers[player.id].skills.destroy();
+          this.allPlayers[player.id].skills = null;
+        }
         // }
+        if (this.instance1.remainigTime() === 5000) {
+          console.log('changa', player);
+        }
         if (!isNaN(this.dt)) {
-          if (this.allPlayers?.[player.id]?.skills?.x && this.allPlayers?.[player.id]?.skills?.y) {
+          if (
+            this.allPlayers?.[player.id]?.skills?.x &&
+            this.allPlayers?.[player.id]?.skills?.y &&
+            player.skills?.x &&
+            player.skills?.y
+          ) {
             this.allPlayers[player.id].skills.x = Math.round(
               lerp(
                 this.allPlayers[player.id].skills.x,
@@ -218,27 +256,32 @@ export default class Game extends Phaser.Scene {
               this.dt
             )
           );
-          this.allPlayers[player.id].target = player.target
-          if (this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !== 'running' && getDistance (this.allPlayers[player.id].sprite, player.target) > 20) {
+          this.allPlayers[player.id].target = player.target;
+          if (
+            this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !==
+              'running' &&
+            getDistance(this.allPlayers[player.id].sprite, player.target) > 20
+          ) {
             this.allPlayers[player.id].sprite.play({ key: 'running' });
           }
-          if (this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !== 'idle' && getDistance (this.allPlayers[player.id].sprite, player.target) < 20) {
+          if (
+            this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !==
+              'idle' &&
+            getDistance(this.allPlayers[player.id].sprite, player.target) < 20
+          ) {
             // this.allPlayers[player.id].sprite = player.target
             // this.allPlayers[player.id].transform  = player.target
             this.allPlayers[player.id].sprite.play({ key: 'idle' });
           }
           if (this.allPlayers[player.id].sprite) {
-            if (
-              this.allPlayers[player.id].sprite.x <
-              player.target.x
-            ) {
+            if (this.allPlayers[player.id].sprite.x < player.target.x) {
               this.allPlayers[player.id].sprite.flipX = false;
             } else {
               this.allPlayers[player.id].sprite.flipX = true;
             }
           }
-          if(this.instance1.remainigTime() === 5000) {
-            console.log('toti', player.skills)
+          if (this.instance1.remainigTime() === 5000) {
+            console.log('toti', player.skills);
           }
           // this.allPlayers[player.id].sprite.x =  player.position.x
           // this.allPlayers[player.id].sprite.y = player.position.y
@@ -270,15 +313,15 @@ export default class Game extends Phaser.Scene {
   }
   update() {
     //  console.log('socket',socket)
-    if(this.input.keyboard.checkDown(this.playerInputClient.keyQ,1000)) {
+    if (this.input.keyboard.checkDown(this.playerInputClient.keyQ, 1000)) {
       console.log('tapioca');
       socket.emit('player q');
     }
     let clientNow = Date.now();
     this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);
     this.clientLastUpdate = clientNow;
-    this.correction = this.clientDeltaTime / this.clientLastDeltaTime
-    this.clientLastDeltaTime = this.clientDeltaTime
+    this.correction = this.clientDeltaTime / this.clientLastDeltaTime;
+    this.clientLastDeltaTime = this.clientDeltaTime;
     // console.log('clientDeltaTime', this.clientDeltaTime)
     // console.log(this.instance1.remainigTime(), this.instance2.remainigTime())
     //console.log('chingo de update')
@@ -314,7 +357,12 @@ export default class Game extends Phaser.Scene {
         if (this.allPlayers[key].sprite.y === Infinity) {
           this.allPlayers[key].sprite.y = 0;
         }
-        if (getDistance (this.allPlayers[key].sprite, this.allPlayers[key].target) > 20) {
+        if (
+          getDistance(
+            this.allPlayers[key].sprite,
+            this.allPlayers[key].target
+          ) > 20
+        ) {
           this.allPlayers[key].sprite.x = lerp(
             this.allPlayers[key].sprite.x,
             this.allPlayers[key].transform.x,
@@ -326,16 +374,23 @@ export default class Game extends Phaser.Scene {
             this.clientDeltaTime
           );
         }
-        
+
         if (this.instance3.remainigTime() >= 100) {
           // console.log(getDistance (this.allPlayers[key].sprite, this.allPlayers[key].target))
           // console.log(getDistance (this.allPlayers[this.currentPlayerId].sprite, this.allPlayers[this.currentPlayerId].target))
-        // this.allPlayers[this.currentPlayerId].sprite.play({ key: 'idle' });
-        // console.log(this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim?.key  === 'running' , this.allPlayers[key].sprite.y, this.allPlayers[key].target.y)
+          // this.allPlayers[this.currentPlayerId].sprite.play({ key: 'idle' });
+          // console.log(this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim?.key  === 'running' , this.allPlayers[key].sprite.y, this.allPlayers[key].target.y)
           // console.log(this.allPlayers[key].sprite.y - this.allPlayers[key].transform.y)
         }
-        
-        if (this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim?.key === 'running' && getDistance (this.allPlayers[this.currentPlayerId].sprite, this.allPlayers[this.currentPlayerId].target) < 20) {
+
+        if (
+          this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim
+            ?.key === 'running' &&
+          getDistance(
+            this.allPlayers[this.currentPlayerId].sprite,
+            this.allPlayers[this.currentPlayerId].target
+          ) < 20
+        ) {
           this.allPlayers[this.currentPlayerId].sprite.play({ key: 'idle' });
         }
         // if (this.playerAnimations === 'idle') {
@@ -365,6 +420,5 @@ export default class Game extends Phaser.Scene {
       });
     }
 
-    // this.input.keyboard.cre
   }
 }
