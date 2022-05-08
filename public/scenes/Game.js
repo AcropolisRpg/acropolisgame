@@ -42,6 +42,10 @@ export default class Game extends Phaser.Scene {
       frameWidth: 24,
       frameHeight: 24,
     });
+    this.load.spritesheet('balla', ball, {
+      frameWidth: 96,
+      frameHeight: 96,
+    });
 
     // this.gameAnimation = this.anims.create(animConfig);
 
@@ -65,6 +69,12 @@ export default class Game extends Phaser.Scene {
       frameRate: 15,
       repeat: -1,
     };
+    // const idle = {
+    //   key: 'idle',
+    //   frames: this.anims.generateFrameNumbers('balla'),
+    //   frameRate: 1,
+    //   repeat: -1,
+    // };
     this.anims.create(idle);
     // console.log('this.colal', this.colala)
     this.cameras.main.setBounds(0, 0, 10000, 10000);
@@ -124,6 +134,14 @@ export default class Game extends Phaser.Scene {
         this.allPlayers[this.currentPlayerId].target = target
       }
     });
+    this.playerInputClient = {}
+    this.playerInputClient.keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    this.playerInputClient.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.playerInputClient.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.playerInputClient.keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.playerInputClient.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.playerInputClient.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+  
 
     socket.on('update state', ({ players, walls, online, fps }) => {
       let now = Date.now();
@@ -147,12 +165,37 @@ export default class Game extends Phaser.Scene {
               x: player.position.x,
               y: player.position.y,
             },
-            target: { x: player.position.x, y: player.position.y }
+            target: { x: player.position.x, y: player.position.y },
+            skills: null
           };
           // console.log('el carjo', this.allPlayers[player.id].sprite);
           // this.cameras.main.startFollow(this.allPlayers[player.id].sprite)
         }
+       
+        // if(this.instance1.remainigTime() === 5000) {
+          if (player.skills?.y && player.skills?.x && !this.allPlayers?.[player.id].skills) {
+            console.log('skills',this.allPlayers?.[player.id].skills);
+            this.allPlayers[player.id].skills = this.add
+              .sprite(player.skills.x, player.skills.y, 'ball')
+          }
+        // }
         if (!isNaN(this.dt)) {
+          if (this.allPlayers?.[player.id]?.skills?.x && this.allPlayers?.[player.id]?.skills?.y) {
+            this.allPlayers[player.id].skills.x = Math.round(
+              lerp(
+                this.allPlayers[player.id].skills.x,
+                player.skills.x,
+                this.dt
+              )
+            );
+            this.allPlayers[player.id].skills.y = Math.round(
+              lerp(
+                this.allPlayers[player.id].skills.y,
+                player.skills.y,
+                this.dt
+              )
+            );
+          }
           if (this.allPlayers[player.id].sprite.x === Infinity) {
             this.allPlayers[player.id].sprite.x = 0;
           }
@@ -192,6 +235,9 @@ export default class Game extends Phaser.Scene {
               this.allPlayers[player.id].sprite.flipX = true;
             }
           }
+          if(this.instance1.remainigTime() === 5000) {
+            console.log('toti', player.skills)
+          }
           // this.allPlayers[player.id].sprite.x =  player.position.x
           // this.allPlayers[player.id].sprite.y = player.position.y
         }
@@ -222,7 +268,10 @@ export default class Game extends Phaser.Scene {
   }
   update() {
     //  console.log('socket',socket)
-
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyQ,1000)) {
+      console.log('tapioca');
+      socket.emit('player q');
+    }
     let clientNow = Date.now();
     this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);
     this.clientLastUpdate = clientNow;

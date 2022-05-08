@@ -13,7 +13,7 @@ const frameRate = 1000 / 30;
 const canvas = { width: 10000, height: 10000 };
 const boxes = 0;
 const playered = 0;
-const playerSize = 15;
+const playerSize = 64;
 const wallThickness = 20;
 let online = 0;
 
@@ -94,12 +94,17 @@ setInterval(() => {
   io.emit('update state', {
     //boxes: entities.boxes.map(toVertices),
     walls: entities.walls.map(toVertices),
-    players: entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition})),
+    // players: entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition})),
+    players:entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition, skills: player.skills?.qSkill?.transform.position})),
     online,
     fps,
   });
 
   entities.players.forEach((player) => {
+    if(entities.players[player.id]?.skills?.qSkill?.transform) {
+      console.log(entities.players[player.id].skills.qSkill.transform)
+    }
+
     let force = 7 * dt;
     const deltaVector = Matter.Vector.sub(
       player.transform.position,
@@ -122,10 +127,11 @@ setInterval(() => {
 io.on('connection', (socket) => {
   online++;
   //Here we create a Matter js circle transform
-  let playerTransform = Matter.Bodies.circle(
+  let playerTransform = Matter.Bodies.rectangle(
     canvas.width/2,
     canvas.height/2,
-    Math.random() * playerSize + playerSize
+    playerSize,
+    playerSize*1.25
   )
   // Here we create the player for the client that is requesting conection to join the game
   const newPlayer = {
@@ -133,6 +139,9 @@ io.on('connection', (socket) => {
     id: socket.id,
     mousePosition: { x: canvas.width/2, y: canvas.height/2 },
     transform: playerTransform,
+    skills: {
+      qSkill: null
+    }
   };
   //Entities will have the state of every object in the game
   entities.players.push(newPlayer);
@@ -149,6 +158,22 @@ io.on('connection', (socket) => {
   socket.on('player click', (coordinates) => {
     console.log(coordinates)
     newPlayer.mousePosition = coordinates;
+  });
+  socket.on('player q', () => {
+    console.log('cvalior ', newPlayer.id ,entities.players)
+    entities.players.forEach((player)=>{
+      if(player.id === newPlayer.id) {
+        player.skills.qSkill = {
+          transform: Matter.Bodies.circle(
+            newPlayer.transform.x + 150,
+            newPlayer.transform.y + 150,
+            40,
+          )
+        }
+        Matter.Composite.add(engine.world, player.skills.qSkill.transform);
+        console.log('lala',  player.skills.qSkill.transform)
+      }
+    })
   });
 });
 
