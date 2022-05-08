@@ -9,7 +9,7 @@ const io = require('socket.io')(server);
 app.use(express.static('dist'));
 dotenv.config();
 
-const frameRate = 1000 / 30;
+const frameRate = 1000 / 60;
 const canvas = { width: 10000, height: 10000 };
 const boxes = 0;
 const playered = 0;
@@ -105,7 +105,7 @@ setInterval(() => {
       console.log(entities.players[player.id].skills.qSkill.transform)
     }
 
-    let force = 7 * dt;
+    let force = 3 * dt;
     const deltaVector = Matter.Vector.sub(
       player.transform.position,
       player.mousePosition

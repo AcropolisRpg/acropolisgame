@@ -55,6 +55,8 @@ export default class Game extends Phaser.Scene {
     this.followingPlayer = false;
   }
   create() {
+    this.clientLastUpdate = Date.now();
+    this.clientLastDelta = Date.now();
     this.playerAnimations = 'idle';
     const running = {
       key: 'running',
@@ -275,6 +277,8 @@ export default class Game extends Phaser.Scene {
     let clientNow = Date.now();
     this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);
     this.clientLastUpdate = clientNow;
+    this.correction = this.clientDeltaTime / this.clientLastDeltaTime
+    this.clientLastDeltaTime = this.clientDeltaTime
     // console.log('clientDeltaTime', this.clientDeltaTime)
     // console.log(this.instance1.remainigTime(), this.instance2.remainigTime())
     //console.log('chingo de update')
@@ -296,8 +300,8 @@ export default class Game extends Phaser.Scene {
             this.cameras.main.startFollow(
               this.allPlayers[this.currentPlayerId].sprite,
               false,
-              this.clientDeltaTime,
-              this.clientDeltaTime
+              this.clientDeltaTime * this.correction,
+              this.clientDeltaTime * this.correction
             );
           }
         }
