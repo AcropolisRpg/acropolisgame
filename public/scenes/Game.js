@@ -2,11 +2,11 @@ import Phaser from 'phaser';
 import io from 'socket.io-client';
 import ball from './../spikedballa.png';
 import atlas from './../atlas.png';
-import forest from './../forest.json';
+import forest from './../forest1.json';
 import cooldownTimer from '../../utils/cooldownTimer';
 import playerSprite from '../../rpg-pack/chars/gabe/gabe-idle-run.png';
 
-const socket = io(); //'https://stealth-magenta-lady.glitch.me:1234'
+const socket = io('https://acropolisrpg.com', {path: '/gameSocket'}); //'https://stealth-magenta-lady.glitch.me:1234'
 const fpsEl = document.querySelector('#fps');
 const onlineEl = document.querySelector('#online');
 const worldX = document.querySelector('#worldX');
@@ -37,7 +37,7 @@ export default class Game extends Phaser.Scene {
   preload() {
     this.load.image('ball', ball);
     this.load.image('atlas', atlas);
-    this.load.tilemapTiledJSON('forest', forest);
+    this.load.tilemapTiledJSON('forestkey', forest);
     this.load.spritesheet('playerSprite', playerSprite, {
       frameWidth: 24,
       frameHeight: 24,
@@ -55,6 +55,17 @@ export default class Game extends Phaser.Scene {
     this.followingPlayer = false;
   }
   create() {
+
+    const map = this.make.tilemap({
+      key: 'forestkey',
+      tileWidth: 16,
+      tileHeight: 16,
+    });
+    const tileset = map.addTilesetImage('atlas', 'atlas');
+    const layer = map.createLayer('piso', tileset, 0, 0);
+    map.createLayer('caminos', tileset, 0, 0);
+    map.createLayer('plantas', tileset, 0, 0);
+    map.createLayer('construcciones', tileset, 0, 0);
     this.clientLastUpdate = Date.now();
     this.clientLastDelta = Date.now();
     this.playerAnimations = 'idle';
@@ -90,14 +101,7 @@ export default class Game extends Phaser.Scene {
       });
       //this.ball.anchor.set(0.5, 0.5);
     });
-    const map = this.make.tilemap({
-      key: 'forest',
-      tileWidth: 16,
-      tileHeight: 16,
-    });
-    const tileset = map.addTilesetImage('atlas', 'atlas');
-    const layer = map.createLayer('layertati', tileset, 0, 0);
-    layer.setScale(3, 3);
+   
 
     this.pointerado = this.input.activePointer;
     this.instance1 = cooldownTimer(5000);
@@ -178,8 +182,7 @@ export default class Game extends Phaser.Scene {
         if (!this.allPlayers?.[player.id]) {
           this.allPlayers[player.id] = {
             sprite: this.add
-              .sprite(player.position.x, player.position.y, 'playerSprite')
-              .setScale(3, 3),
+              .sprite(player.position.x, player.position.y, 'playerSprite'),
             playerId: player.id,
             transform: {
               x: player.position.x,
@@ -267,7 +270,7 @@ export default class Game extends Phaser.Scene {
           if (
             this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !==
               'idle' &&
-            getDistance(this.allPlayers[player.id].sprite, player.target) < 20
+            getDistance(this.allPlayers[player.id].sprite, player.target) < 10
           ) {
             // this.allPlayers[player.id].sprite = player.target
             // this.allPlayers[player.id].transform  = player.target
@@ -340,6 +343,7 @@ export default class Game extends Phaser.Scene {
           this.followingPlayer = true;
           // console.log(this.allPlayers[this.currentPlayerId],this.currentPlayerId)
           if (this.cameras.main) {
+            this.cameras.main.zoom = 2 
             this.cameras.main.startFollow(
               this.allPlayers[this.currentPlayerId].sprite,
               false,

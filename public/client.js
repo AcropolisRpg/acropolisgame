@@ -6,8 +6,8 @@ const config = {
     renderType: 3,
     type: Phaser.AUTO,
     parent: 'phaser-example',
-    width: 800,
-    height: 800,
+    width: 600,
+    height: 600,
     fps:60
 };
 

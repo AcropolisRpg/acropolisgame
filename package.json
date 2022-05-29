@@ -2,7 +2,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "parcel": " parcel watch public/index.html"
+    "parcel": " parcel watch public/index.html --public-url ./game/"
   },
   "dependencies": {
     "dotenv": "^16.0.0",
@@ -13,7 +13,8 @@
     "phaser": "^3.55.2",
     "phaser-ce": "^2.19.2",
     "socket.io": "^4.5.0",
-    "socket.io-client": "^4.5.0"
+    "socket.io-client": "^4.5.0",
+    "bitecs":"0.3.38"
   },
   "engines": {
     "node": "16.x"
