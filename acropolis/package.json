@@ -1,0 +1,55 @@
+{
+  "name": "acropolis",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "bitecs": "0.3.38",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "lodash": "^4.17.21",
+    "matter-js": "^0.18.0",
+    "phaser": "^3.55.2",
+    "phaser-ce": "^2.19.2",
+    "socket.io": "^4.5.0",
+    "socket.io-client": "^4.5.0",
+    "web3": "^1.7.3",
+    "web3-token": "^0.2.9"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.9",
+    "@vue/cli-plugin-eslint": "~4.5.9",
+    "@vue/cli-plugin-router": "^4.5.17",
+    "@vue/cli-service": "~4.5.9",
+    "@vue/compiler-sfc": "^3.0.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^7.0.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
