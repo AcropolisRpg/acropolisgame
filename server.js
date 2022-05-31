@@ -105,7 +105,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
-app.use(express.static('dist'));
+app.use(express.static('acropolis/dist'));
 dotenv.config();
 
 const canvas = { width: 1000, height: 1000 };
