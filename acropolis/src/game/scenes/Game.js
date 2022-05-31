@@ -216,7 +216,7 @@ export default class Game extends Phaser.Scene {
         }
         // }
         if (this.instance1.remainigTime() === 5000) {
-          console.log('changa', player);
+          // console.log('changa', player);
         }
         if (!isNaN(this.dt)) {
           if (
@@ -285,7 +285,7 @@ export default class Game extends Phaser.Scene {
             }
           }
           if (this.instance1.remainigTime() === 5000) {
-            console.log('toti', player.skills);
+            // console.log('toti', player.skills);
           }
           // this.allPlayers[player.id].sprite.x =  player.position.x
           // this.allPlayers[player.id].sprite.y = player.position.y
@@ -318,7 +318,7 @@ export default class Game extends Phaser.Scene {
   update() {
     //  console.log('socket',socket)
     if (this.input.keyboard.checkDown(this.playerInputClient.keyQ, 1000)) {
-      console.log('tapioca');
+      // console.log('tapioca');
       socket.emit('player q');
     }
     let clientNow = Date.now();

@@ -4,10 +4,10 @@
       <h3 style="color: #fff">Acropolis Playgrounds BETA Development!</h3>
       <div id="phaser-example" style="border-radius: 100px"></div>
       <h3 style="color: #fff">Click anywhere to move around or press "Q" key for skills.</h3>
-      <a href="https://www.acropolis.com/" style="color: #fff">Go to Acropolist home page</a>
+      <a href="https://www.acropolisrpg.com/" style="color: #fff">Go to Acropolist home page</a>
     </div>
-    <p>
-      Grab a friend (or open another window) and click to agitate the boxes. 
+    <p style="color: #fff; text-align: center;">
+      Server stats. 
       <span id="online">0</span> users online.
       <span id="fps">0</span> server fps.
       <span id="worldX">0</span> server fps.
@@ -24,10 +24,7 @@ import Game from '../game/scenes/Game'
 // import Web3Token from 'web3-token';
 
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  },
+  name: 'Acropolis',
   methods: {
     initGame () {
       
