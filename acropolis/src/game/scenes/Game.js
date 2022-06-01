@@ -37,14 +37,15 @@ export default class Game extends Phaser.Scene {
 
   }
   preload() {
-    this.load.image('ball', '/game/sprites/spikedballa.png');
-    this.load.image('atlas', '/game/tiled/atlas.png');
-    this.load.tilemapTiledJSON('forestkey', '/game/tiled/forest1.json');
-    this.load.spritesheet('playerSprite', '/game/rpg-pack/chars/gabe/gabe-idle-run.png', {
+    //Arreglar esta mierdda d elos paths del juego porque se tiene que poner el game /game//game//game/
+    this.load.image('ball', '/game/game/sprites/spikedballa.png');
+    this.load.image('atlas', '/game/game/tiled/atlas.png');
+    this.load.tilemapTiledJSON('forestkey', '/game/game/tiled/forest1.json');
+    this.load.spritesheet('playerSprite', '/game/game/rpg-pack/chars/gabe/gabe-idle-run.png', {
       frameWidth: 24,
       frameHeight: 24,
     });
-    this.load.spritesheet('balla', '/game/sprites/spikedballa.png', {
+    this.load.spritesheet('balla', '/game/game/sprites/spikedballa.png', {
       frameWidth: 96,
       frameHeight: 96,
     });
