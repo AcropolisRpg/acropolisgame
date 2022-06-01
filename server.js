@@ -283,7 +283,7 @@ io.on('connection', (socket) => {
         })
         console.log('wallets',wallets.data)
         const wallet = wallets.data.find( (wallet)=> wallet.address === address)
-        console.log('existe', existe)
+        console.log('existe', wallet)
         socket.emit("loggedIn", true);
         const  nonce =  await axios({
           method:'get',
