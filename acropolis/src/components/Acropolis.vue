@@ -36,7 +36,11 @@ import Game from '../game/scenes/Game'
 import Web3 from 'web3';
 import Web3Token from 'web3-token';
 import io from 'socket.io-client';
-const socket = io();
+
+//local
+//const socket = io();
+// prod
+const socket = io('https://acropolisrpg.com', {path: '/gameSocket'})
 
 // import TitleScreen from '../game/scenes/TileScreen'
 // import Web3 from 'web3';
