@@ -1,6 +1,9 @@
 const express = require('express');
 const Matter = require('matter-js');
 const dotenv = require('dotenv');
+const Web3Token = require('web3-token');
+const axios = require('axios');
+
 const {
   createWorld,
   Types,
@@ -266,6 +269,35 @@ io.on('connection', (socket) => {
   socket.on('player click', (coordinates) => {
     // console.log(coordinates);
     newPlayer.mousePosition = coordinates;
+  });
+
+  socket.on('login', async (authToken) => {
+    try {
+      const token = authToken
+      const { address, body } = await Web3Token.verify(token);
+      if (address) {
+        console.log('address body', address, body)
+        const  wallets =  await axios({
+          method:'get',
+          url: 'https://www.acropolisrpg.com/api/wallets',
+        })
+        console.log('wallets',wallets.data)
+        const wallet = wallets.data.find( (wallet)=> wallet.address === address)
+        console.log('existe', existe)
+        socket.emit("loggedIn", true);
+        const  nonce =  await axios({
+          method:'get',
+          url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`,
+        })
+        await axios({
+          method:'get',
+          url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce}`,
+        })
+      } 
+    } catch (error) {
+      console.log(error)
+    }
+
   });
   socket.on('player q', () => {
     // console.log('cvalior ', newPlayer.id, entities.players);

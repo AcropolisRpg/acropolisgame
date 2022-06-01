@@ -5,16 +5,17 @@
     "parcel": " parcel watch public/index.html --public-url ./game/"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "bitecs": "0.3.38",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "lodash": "^4.17.21",
     "matter-js": "^0.18.0",
-    "parcel-bundler": "^1.12.5",
     "phaser": "^3.55.2",
     "phaser-ce": "^2.19.2",
     "socket.io": "^4.5.0",
     "socket.io-client": "^4.5.0",
-    "bitecs":"0.3.38"
+    "web3-token": "^0.2.9"
   },
   "engines": {
     "node": "16.x"

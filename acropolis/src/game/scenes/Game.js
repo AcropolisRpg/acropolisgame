@@ -1,11 +1,9 @@
 import Phaser from 'phaser';
-import io from 'socket.io-client';
 // import ball from '../sprites/spikedballa.png';
 // import atlas from '../tiled/atlas.png';
 // import forest from '../tiled/forest1.json';
 import cooldownTimer from '../utils/cooldownTimer';
 // import playerSprite from '../rpg-pack/chars/gabe/gabe-idle-run.png';
-const socket = io();
 // const socket = io('https://acropolisrpg.com', {path: '/gameSocket'}); //'https://stealth-magenta-lady.glitch.me:1234'
 // const fpsEl = document.querySelector('#fps');
 // const onlineEl = document.querySelector('#online');
@@ -32,8 +30,12 @@ function getDistance(Vector1, Vector2) {
 //     }, timeout);
 //   };
 // }
-
+let socket = ''
 export default class Game extends Phaser.Scene {
+  init(data) {
+    socket = data.socket
+
+  }
   preload() {
     this.load.image('ball', '/game/sprites/spikedballa.png');
     this.load.image('atlas', '/game/tiled/atlas.png');
@@ -94,14 +96,7 @@ export default class Game extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, 10000, 10000);
 
     // console.log('lala');
-    socket.once('connect', () => {
-      // console.log('connected');
-      socket.emit('register', (socketId) => {
-        console.log('uan chingada', socketId);
-        // this.currentPlayerId = socketId;
-      });
-      //this.ball.anchor.set(0.5, 0.5);
-    });
+    
    
 
     this.pointerado = this.input.activePointer;
