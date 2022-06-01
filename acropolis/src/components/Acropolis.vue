@@ -40,7 +40,7 @@ import io from 'socket.io-client';
 //local
 //const socket = io();
 // prod
-const socket = io('https://acropolisrpg.com', {path: '/gameSocket'})
+const socket = io(window.location.origin, {path: '/gameSocket'})
 
 // import TitleScreen from '../game/scenes/TileScreen'
 // import Web3 from 'web3';
