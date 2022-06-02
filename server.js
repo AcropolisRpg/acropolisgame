@@ -282,22 +282,27 @@ io.on('connection', (socket) => {
           url: 'https://www.acropolisrpg.com/api/wallets',
         })
         console.log('wallets',wallets.data)
-        const wallet = wallets.data.find( (wallet)=> wallet.address === address)
+        const wallet = wallets.data.find( (wallet)=> wallet.address.toString().toUpperCase() === address.toString().toUpperCase())
         console.log('existe', wallet)
         socket.emit("loggedIn", true);
-        const  nonce =  await axios({
-          method:'get',
-          url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`,
-        })
-        await axios({
-          method:'get',
-          url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce}`,
-        })
+        try {
+          const  nonce =  await axios({
+            method:'get',
+            url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`,
+          })
+          console.log(nonce)
+          const claimed = await axios({
+            method:'get',
+            url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`,
+          })
+          console.log(claimed)
+        } catch (error) {
+          console.log(error)
+        }
       } 
     } catch (error) {
       console.log(error)
     }
-
   });
   socket.on('player q', () => {
     // console.log('cvalior ', newPlayer.id, entities.players);
