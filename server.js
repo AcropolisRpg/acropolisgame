@@ -114,7 +114,7 @@ dotenv.config();
 const canvas = { width: 1000, height: 1000 };
 const boxes = 0;
 const playered = 0;
-const playerSize = 25;
+const playerSize = 16;
 const wallThickness = 20;
 let online = 0;
 
@@ -220,7 +220,7 @@ setInterval(() => {
     const normalizedDelta = Matter.Vector.normalise(deltaVector);
     let forceVector = Matter.Vector.mult(normalizedDelta, force);
     const target = Matter.Vector.sub(player.transform.position, forceVector);
-    if (getDistance(player.mousePosition, player.transform.position) > 10) {
+    if (getDistance(player.mousePosition, player.transform.position) > 1) {
       // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
       player.transform.x = Math.round(
         lerp(player.transform.position.x, target.x, dt)
@@ -261,9 +261,12 @@ io.on('connection', (socket) => {
   //Here we listen/receive the connected player events.
   socket.on('disconnect', () => {
     --online;
+
+    Matter.World.remove(engine.world, newPlayer.transform);
     entities.players = entities.players.filter(
       (player) => player.id !== newPlayer.id
     );
+
   });
   socket.on('register', (cb) => cb(socket.id));
   socket.on('player click', (coordinates) => {
