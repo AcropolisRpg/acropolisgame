@@ -70,7 +70,8 @@ let socket;
 // if (process.env.ENVI === 'production') {
 //   socket = io(window.location.origin, { path: '/gameSocket' });
 // } else {
-  socket = io();
+  // socket = io();
+   socket = io(window.location.origin, { path: '/gameSocket' });
 // }
 
 // import TitleScreen from '../game/scenes/TileScreen'
