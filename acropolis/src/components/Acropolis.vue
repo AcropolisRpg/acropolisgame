@@ -67,11 +67,11 @@ import io from 'socket.io-client';
 //const socket = io();
 // prod
 let socket;
-if (process.env.ENVI === 'production') {
-  socket = io(window.location.origin, { path: '/gameSocket' });
-} else {
+// if (process.env.ENVI === 'production') {
+//   socket = io(window.location.origin, { path: '/gameSocket' });
+// } else {
   socket = io();
-}
+// }
 
 // import TitleScreen from '../game/scenes/TileScreen'
 // import Web3 from 'web3';
