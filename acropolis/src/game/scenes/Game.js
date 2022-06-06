@@ -262,7 +262,7 @@ export default class Game extends Phaser.Scene {
               !this.isAttaking &&
             getDistance(this.allPlayers[player.id].sprite, player.target) > 1
           ) {
-            playerPlayAnimation(this, 'running', this.allPlayers[this.currentPlayerId])
+            playerPlayAnimation(this, 'running', this.allPlayers[player.id])
           }
           if (
             this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !==
