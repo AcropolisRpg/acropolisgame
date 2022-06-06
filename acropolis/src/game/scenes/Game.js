@@ -1,119 +1,62 @@
 import Phaser from 'phaser';
-// import ball from '../sprites/spikedballa.png';
-// import atlas from '../tiled/atlas.png';
-// import forest from '../tiled/forest1.json';
 import cooldownTimer from '../utils/cooldownTimer';
-// import playerSprite from '../rpg-pack/chars/gabe/gabe-idle-run.png';
 // const socket = io('https://acropolisrpg.com', {path: '/gameSocket'}); //'https://stealth-magenta-lady.glitch.me:1234'
 // const fpsEl = document.querySelector('#fps');
 // const onlineEl = document.querySelector('#online');
 // const worldX = document.querySelector('#worldX');
 // const worldY = document.querySelector('#worldY');
 // const frameRate = 1000 / 30;
-
-function lerp(start, end, amt) {
-  return (1 - amt) * start + amt * end;
-}
-
-function getDistance(Vector1, Vector2) {
-  return Math.sqrt(
-    Math.pow(Vector1.x - Vector2.x, 2) + Math.pow(Vector1.y - Vector2.y, 2)
-  );
-}
-
-// function debounce(func, timeout = 300) {
-//   let timer;
-//   return (...args) => {
-//     clearTimeout(timer);
-//     timer = setTimeout(() => {
-//       func.apply(this, args);
-//     }, timeout);
-//   };
-// }
-let socket = '';
-let pathPrefix = '';
-if (process.env.ENVI === 'production') {
-  pathPrefix = '/game';
-}
-
+import loadingBar from '../components/loadingBar';
+import { lerp, getDistance } from '../utils/transformManager';
+import {
+  loadImage,
+  loadTilemapTiledJSON,
+  loadSpritesheet
+} from '../phaserHelper/loaders';
+import { FRAME_SIZE_32_32, FRAME_SIZE_96_96 } from '../constants/constants';
+import animatedPlayer from '../animations/player';
+import playerPlayAnimation from '../animations/playerPlayAnimations';
 export default class Game extends Phaser.Scene {
   init(data) {
-    socket = data.socket;
+    this.lobbyScene = {};
+    this.lobbyScene.socket = data.socket;
   }
   preload() {
-    let progressBar = this.add.graphics();
-    let progressBox = this.add.graphics();
-    let text = this.add.text(170, 240, 'Loading Acropolis...');
-
-    progressBox.fillStyle(0x222222, 0.8);
-    progressBox.fillRect(0, 270, 600, 50);
-
-    this.load.on('progress', function (value) {
-      console.log(value);
-      progressBar.clear();
-      progressBar.fillStyle(0xffffff, 1);
-      progressBar.fillRect(10, 280, 590 * value, 30);
-    });
-
-    this.load.on('fileprogress', function (file) {
-      console.log(file.src);
-    });
-    this.load.on('complete', function () {
-      console.log('complete');
-      progressBar.destroy();
-      progressBox.destroy();
-      text.destroy();
-    });
-
-    //Arreglar esta mierdda d elos paths del juego porque se tiene que poner el game /game//game//game/
-    this.load.image('ball', pathPrefix + '/game/sprites/spikedballa.png');
-    this.load.image('atlas', pathPrefix + '/game/tiled/atlas.png');
-    this.load.tilemapTiledJSON(
-      'forestkey',
-      pathPrefix + '/game/tiled/forest1.json'
+    //This is the place where you load all assets.
+    loadingBar(this);
+    loadImage(this, 'ball', '/game/sprites/spikedballa.png');
+    loadImage(this, 'atlas', '/game/tiled/atlas.png');
+    loadTilemapTiledJSON(this, 'forestkey', '/game/tiled/forest1.json');
+    loadSpritesheet(
+      this,
+      'bodySpriteSheet',
+      '/game/character/characters/char_all.png',
+      FRAME_SIZE_32_32
     );
-    this.load.spritesheet(
-      'playerSprite',
-      pathPrefix + '/game/rpg-pack/chars/gabe/gabe-idle-run.png',
-      {
-        frameWidth: 24,
-        frameHeight: 24
-      }
+    loadSpritesheet(
+      this,
+      'shoesSpriteSheet',
+      '/game/character/clothes/shoes.png',
+      FRAME_SIZE_32_32
     );
-    this.load.spritesheet(
-      'newPlayerSpriteSheet',
-      pathPrefix + '/game/character/characters/char_all.png',
-      {
-        frameWidth: 32,
-        frameHeight: 32
-      }
+    loadSpritesheet(
+      this,
+      'clothesSpriteSheet',
+      '/game/character/clothes/basic.png',
+      FRAME_SIZE_32_32
     );
-    this.load.spritesheet(
-      'newPlayerShoesSpriteSheet',
-      pathPrefix + '/game/character/clothes/shoes.png',
-      {
-        frameWidth: 32,
-        frameHeight: 32
-      }
-    );
-    this.load.spritesheet(
+    loadSpritesheet(
+      this,
       'balla',
-      pathPrefix + '/game/sprites/spikedballa.png',
-      {
-        frameWidth: 96,
-        frameHeight: 96
-      }
+      '/game/sprites/spikedballa.png',
+      FRAME_SIZE_96_96
     );
-
     // this.gameAnimation = this.anims.create(animConfig);
-
     this.allPlayers = {};
     this.gameTime = Date.now();
-    // this.load.image("tiles","src/assets/tiles.png");
     this.followingPlayer = false;
   }
   create() {
-    console.log('create');
     const map = this.make.tilemap({
       key: 'forestkey',
       tileWidth: 16,
@@ -128,42 +71,7 @@ export default class Game extends Phaser.Scene {
     this.clientLastUpdate = Date.now();
     this.clientLastDelta = Date.now();
     this.clientLastDeltaTime = Date.now();
-    this.playerAnimations = 'idle';
-    const running = {
-      key: 'running',
-      frames: this.anims.generateFrameNumbers('newPlayerSpriteSheet', { start: 128, end:136 }),
-      frameRate: 15,
-      repeat: -1
-    };
-    this.anims.create(running);
-    const idle = {
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers('newPlayerSpriteSheet', { frames: [128] }),
-      frameRate: 15,
-      repeat: -1
-    };
-    // const idle = {
-    //   key: 'idle',
-    //   frames: this.anims.generateFrameNumbers('balla'),
-    //   frameRate: 1,
-    //   repeat: -1,
-    // };
-    this.anims.create(idle);
-
-    const runningShoes = {
-      key: 'runningShoes',
-      frames: this.anims.generateFrameNumbers('newPlayerShoesSpriteSheet', { start: 200, end:208 }),
-      frameRate: 15,
-      repeat: -1
-    };
-    this.anims.create(runningShoes);
-    const idleShoes = {
-      key: 'idleShoes',
-      frames: this.anims.generateFrameNumbers('newPlayerShoesSpriteSheet', { frames: [128] }),
-      frameRate: 15,
-      repeat: -1
-    };
-    this.anims.create(idleShoes);
+    animatedPlayer(this)
     // console.log('this.colal', this.colala)
     this.cameras.main.setBounds(0, 0, 1000, 1000);
 
@@ -189,15 +97,18 @@ export default class Game extends Phaser.Scene {
           this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim
             ?.key !== 'running'
         ) {
-          this.allPlayers[this.currentPlayerId].sprite.play({ key: 'running' });
-          this.allPlayers[this.currentPlayerId].shoesSprite.play({ key: 'runningShoes' });
+          playerPlayAnimation(this, 'running', this.allPlayers[this.currentPlayerId])
           if (
             this.allPlayers[this.currentPlayerId].sprite.x <
             this.pointerado.worldX
           ) {
             this.allPlayers[this.currentPlayerId].sprite.flipX = false;
+            this.allPlayers[this.currentPlayerId].shoesSprite.flipX = false;
+            this.allPlayers[this.currentPlayerId].clothesSprite.flipX = false;
           } else {
             this.allPlayers[this.currentPlayerId].sprite.flipX = true;
+            this.allPlayers[this.currentPlayerId].shoesSprite.flipX = true;
+            this.allPlayers[this.currentPlayerId].clothesSprite.flipX = true;
           }
         }
         const target = {
@@ -205,7 +116,7 @@ export default class Game extends Phaser.Scene {
           y: Math.round(pointer.worldY)
         };
         this.allPlayers[this.currentPlayerId].target = target;
-        socket.emit('player click', target);
+        this.lobbyScene.socket.emit('player click', target);
         // console.log('allplayers',this.allPlayers)
       }
     });
@@ -234,30 +145,34 @@ export default class Game extends Phaser.Scene {
     this.playerInputClient.keyF = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.F
     );
+    this.playerInputClient.keyA = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.A
+    );
+    this.playerInputClient.keyS = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.S
+    );
 
-    socket.on('update state', ({ players }) => {
+    this.lobbyScene.socket.on('update state', ({ players }) => {
       let now = Date.now();
       this.dt = (now - this.lastUpdate) / (1000 / 30);
-      //  console.log('now', this.dt)
       this.lastUpdate = now;
-      // console.log(walls)
-      //  console.log('now',now)
-      // recibir y guardar players en otra variable verificar cuando sea diferente y si es diferente remover al jugador o realizar otras acciones.
-      // this.elMono.x = players[0].x
-      // this.elMono.y = players[0].y
       players.forEach((player) => {
-        //  console.log(player)
         if (!this.allPlayers?.[player.id]) {
           this.allPlayers[player.id] = {
             sprite: this.add.sprite(
               player.position.x,
               player.position.y,
-              'newPlayerSpriteSheet'
+              'bodySpriteSheet'
             ),
-            shoesSprite:this.add.sprite(
+            shoesSprite: this.add.sprite(
               player.position.x,
               player.position.y,
-              'newPlayerShoesSpriteSheet'
+              'shoesSpriteSheet'
+            ),
+            clothesSprite: this.add.sprite(
+              player.position.x,
+              player.position.y,
+              'clothesSpriteSheet'
             ),
             playerId: player.id,
             transform: {
@@ -267,8 +182,6 @@ export default class Game extends Phaser.Scene {
             target: { x: player.position.x, y: player.position.y },
             skills: null
           };
-          // console.log('el carjo', this.allPlayers[player.id].sprite);
-          // this.cameras.main.startFollow(this.allPlayers[player.id].sprite)
         }
 
         // if(this.instance1.remainigTime() === 5000) {
@@ -318,10 +231,12 @@ export default class Game extends Phaser.Scene {
           if (this.allPlayers[player.id].sprite.x === Infinity) {
             this.allPlayers[player.id].sprite.x = 0;
             this.allPlayers[player.id].shoesSprite.x = 0;
+            this.allPlayers[player.id].clothesSprite.x = 0;
           }
           if (this.allPlayers[player.id].sprite.y === Infinity) {
             this.allPlayers[player.id].sprite.y = 0;
             this.allPlayers[player.id].shoesSprite.y = 0;
+            this.allPlayers[player.id].clothesSprite.y = 0;
           }
           this.allPlayers[player.id].transform.x = Math.round(
             lerp(
@@ -338,42 +253,40 @@ export default class Game extends Phaser.Scene {
             )
           );
           this.allPlayers[player.id].target = player.target;
+          // if(this.isAttaking){
+          //   return
+          // }
           if (
             this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !==
               'running' &&
+              !this.isAttaking &&
             getDistance(this.allPlayers[player.id].sprite, player.target) > 1
           ) {
-            this.allPlayers[player.id].sprite.play({ key: 'running' });
-            this.allPlayers[player.id].shoesSprite.play({ key: 'runningShoes' });
+            playerPlayAnimation(this, 'running', this.allPlayers[this.currentPlayerId])
           }
           if (
             this.allPlayers?.[player.id]?.sprite?.anims?.currentAnim?.key !==
               'idle' &&
+              !this.isAttaking &&
             getDistance(this.allPlayers[player.id].sprite, player.target) < 1
           ) {
-            // this.allPlayers[player.id].sprite = player.target
-            // this.allPlayers[player.id].transform  = player.target
-            this.allPlayers[player.id].sprite.play({ key: 'idle' });
-            this.allPlayers[player.id].shoesSprite.play({ key: 'idleShoes' });
+            playerPlayAnimation(this, 'idle', this.allPlayers[player.id])
           }
           if (this.allPlayers[player.id].sprite) {
             if (this.allPlayers[player.id].sprite.x < player.target.x) {
               this.allPlayers[player.id].sprite.flipX = false;
-              this.allPlayers[player.id].spriteShoes.flipX = false;
+              this.allPlayers[player.id].shoesSprite.flipX = false;
+              this.allPlayers[player.id].clothesSprite.flipX = false;
             } else {
               this.allPlayers[player.id].sprite.flipX = true;
-              this.allPlayers[player.id].spriteShoes.flipX = true;
+              this.allPlayers[player.id].shoesSprite.flipX = true;
+              this.allPlayers[player.id].clothesSprite.flipX = true;
             }
           }
           if (this.instance1.remainigTime() === 5000) {
             // console.log('toti', player.skills);
           }
-          // this.allPlayers[player.id].sprite.x =  player.position.x
-          // this.allPlayers[player.id].sprite.y = player.position.y
         }
-        // if()
-
-        //this.allPlayers[player.id].sprite.destroy()
       });
 
       for (let [key, value] of Object.entries(this.allPlayers)) {
@@ -388,19 +301,50 @@ export default class Game extends Phaser.Scene {
           delete this.allPlayers[key];
         }
       }
-      // console.log(players)
-
-      // fpsEl.textContent = Math.round(fps);
-      // onlineEl.textContent = online;
-      // worldX.textContent = this.pointerado.worldX;
-      // worldY.textContent = this.pointerado.worldY;
     });
-    console.log('create finish');
+
   }
   update() {
+   
     if (this.input.keyboard.checkDown(this.playerInputClient.keyQ, 1000)) {
-      socket.emit('player q');
+      this.lobbyScene.socket.emit('player q');
     }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyW, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'attack', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 267);
+    }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyE, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'mining', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 530);
+    }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyR, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'gathering', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 530);
+    }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyD, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'chopping', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 530);
+    }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyF, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'fishing', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 530);
+    }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyA, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'watering', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 530);
+    }
+    if(this.input.keyboard.checkDown(this.playerInputClient.keyS, 1000) && !this.isAttaking ) {
+      this.isAttaking = true
+      playerPlayAnimation(this, 'shoveling', this.allPlayers[this.currentPlayerId])
+      setTimeout(()=> this.isAttaking = false, 530);
+    }
+
     let clientNow = Date.now();
     this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);
     this.clientLastUpdate = clientNow;
@@ -411,20 +355,27 @@ export default class Game extends Phaser.Scene {
       return;
     }
     for (let [key] of Object.entries(this.allPlayers)) {
-      if (socket.id && this.allPlayers[socket.id].sprite) {
-        this.currentPlayerId = socket.id;
-        if (this.allPlayers[this.currentPlayerId] && !this.followingPlayer && this.cameras.main) {
+      if (
+        this.lobbyScene.socket.id &&
+        this.allPlayers[this.lobbyScene.socket.id].sprite
+      ) {
+        this.currentPlayerId = this.lobbyScene.socket.id;
+        if (
+          this.allPlayers[this.currentPlayerId] &&
+          !this.followingPlayer &&
+          this.cameras.main
+        ) {
           this.followingPlayer = true;
-   
-            this.cameras.main.startFollow(
-              this.allPlayers[this.currentPlayerId].sprite,
-              false,
-              this.clientDeltaTime * this.correction,
-              this.clientDeltaTime * this.correction
-            );
-         
-            this.cameras.main.zoom = 1.5;
 
+          this.cameras.main.startFollow(
+            this.allPlayers[this.currentPlayerId].sprite,
+            false,
+            this.clientDeltaTime * this.correction,
+            this.clientDeltaTime * this.correction
+          );
+
+          this.cameras.main.zoom = 2;
+          this.cameras.main.roundPixels = true;
         }
       }
 
@@ -432,10 +383,12 @@ export default class Game extends Phaser.Scene {
         if (this.allPlayers[key].sprite.x === Infinity) {
           this.allPlayers[key].sprite.x = 0;
           this.allPlayers[key].shoesSprite.x = 0;
+          this.allPlayers[key].clothesSprite.x = 0;
         }
         if (this.allPlayers[key].sprite.y === Infinity) {
           this.allPlayers[key].sprite.y = 0;
           this.allPlayers[key].shoesSprite.y = 0;
+          this.allPlayers[key].clothesSprite.y = 0;
         }
         if (
           getDistance(
@@ -453,6 +406,11 @@ export default class Game extends Phaser.Scene {
             this.allPlayers[key].transform.x,
             this.clientDeltaTime
           );
+          this.allPlayers[key].clothesSprite.x = lerp(
+            this.allPlayers[key].clothesSprite.x,
+            this.allPlayers[key].transform.x,
+            this.clientDeltaTime
+          );
           this.allPlayers[key].sprite.y = lerp(
             this.allPlayers[key].sprite.y,
             this.allPlayers[key].transform.y,
@@ -463,9 +421,15 @@ export default class Game extends Phaser.Scene {
             this.allPlayers[key].transform.y,
             this.clientDeltaTime
           );
+          this.allPlayers[key].clothesSprite.y = lerp(
+            this.allPlayers[key].clothesSprite.y,
+            this.allPlayers[key].transform.y,
+            this.clientDeltaTime
+          );
         }
         // Debugger conbsole logs
         if (this.instance3.remainigTime() >= 100) {
+          // console.log(this.cameras.main)
           // console.log(getDistance (this.allPlayers[key].sprite, this.allPlayers[key].target))
           // console.log(getDistance (this.allPlayers[this.currentPlayerId].sprite, this.allPlayers[this.currentPlayerId].target))
           // this.allPlayers[this.currentPlayerId].sprite.play({ key: 'idle' });
@@ -476,13 +440,14 @@ export default class Game extends Phaser.Scene {
         if (
           this.allPlayers?.[this.currentPlayerId]?.sprite?.anims?.currentAnim
             ?.key === 'running' &&
+            !this.isAttaking &&
           getDistance(
             this.allPlayers[this.currentPlayerId].sprite,
             this.allPlayers[this.currentPlayerId].target
           ) < 1
         ) {
-          this.allPlayers[this.currentPlayerId].sprite.play({ key: 'idle' });
-          this.allPlayers[this.currentPlayerId].shoesSprite.play({ key: 'idleShoes' });
+          playerPlayAnimation(this, 'idle', this.allPlayers[this.currentPlayerId])
+
         }
       }
     }
@@ -499,12 +464,14 @@ export default class Game extends Phaser.Scene {
         ) {
           this.allPlayers[this.currentPlayerId].sprite.flipX = false;
           this.allPlayers[this.currentPlayerId].shoesSprite.flipX = false;
+          this.allPlayers[this.currentPlayerId].clothesSprite.flipX = false;
         } else {
           this.allPlayers[this.currentPlayerId].sprite.flipX = true;
           this.allPlayers[this.currentPlayerId].shoesSprite.flipX = true;
+          this.allPlayers[this.currentPlayerId].clothesSprite.flipX = true;
         }
       }
-      socket.emit('player click', {
+      this.lobbyScene.socket.emit('player click', {
         x: Math.round(this.pointerado.worldX),
         y: Math.round(this.pointerado.worldY)
       });
