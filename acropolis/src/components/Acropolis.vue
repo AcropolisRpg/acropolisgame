@@ -31,7 +31,7 @@
         <h3 style="color: #fff">Acropolis Playgrounds BETA Development!</h3>
         <div id="phaser-example" style="border-radius: 100px"></div>
         <h3 style="color: #fff">
-          Click anywhere to move around or press "Q" key for skills.
+          Click anywhere to move around or press "QWERASDF" key for skills.
         </h3>
         <a href="https://www.acropolisrpg.com/" style="color: #fff"
           >Go to Acropolist home page</a
