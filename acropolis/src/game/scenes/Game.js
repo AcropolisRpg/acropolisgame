@@ -361,7 +361,7 @@ export default class Game extends Phaser.Scene {
       ) {
         this.currentPlayerId = this.lobbyScene.socket.id;
         if (
-          this.allPlayers[this.currentPlayerId] &&
+          this.allPlayers?.[this.currentPlayerId]?.sprite &&
           !this.followingPlayer &&
           this.cameras.main
         ) {
