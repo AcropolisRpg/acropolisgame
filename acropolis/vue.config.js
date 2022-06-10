@@ -3,3 +3,7 @@ module.exports = {
     ? '/game'
     : '/'
 }
+
+// module.exports = {
+//   publicPath:  '/game'
+// }
