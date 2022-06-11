@@ -11,6 +11,12 @@ import { FRAME_SIZE_32_32, FRAME_SIZE_96_96 } from '../constants/constants';
 import animatedPlayer from '../systems/playerSpritesheetAnimations';
 import playerPlayAnimation from '../systems/playerPlayAnimations';
 import gameController from '../systems/gameController';
+import { flipPlayerX } from '../systems/flipPlayer';
+import { addComponent, addEntity, createWorld } from 'bitecs';
+import { Position } from '../components/position';
+import { Velocity } from '../components/velocity';
+import { Sprite } from '../components/sprite';
+import { createSpriteSystem } from '../systems/createSpriteSystem';
 export default class Game extends Phaser.Scene {
   init(data) {
     this.lobbyScene = {};
@@ -50,6 +56,21 @@ export default class Game extends Phaser.Scene {
     this.followingPlayer = false;
   }
   create() {
+    this.world = createWorld()
+    const player = addEntity(this.world)
+    addComponent(this.world, Position, player)
+
+    Position.x[player] = 100 
+    Position.y[player] = 100
+
+    addComponent(this.world, Velocity, player)
+
+    Velocity.x[player] = 100
+    Velocity.y[player] = 100
+    addComponent(this.world, Sprite, player)
+    Sprite.texture[player] = 0
+
+    this.spriteSystem = createSpriteSystem(this, ['bodySpriteSheet','clothesSpriteSheet','shoesSpriteSheet'])
     //Build Map
     const map = this.make.tilemap({
       key: 'forestkey',
@@ -99,13 +120,9 @@ export default class Game extends Phaser.Scene {
             this.allPlayers[this.currentPlayerId].sprite.x <
             this.pointerado.worldX
           ) {
-            this.allPlayers[this.currentPlayerId].sprites.body.flipX = false;
-            this.allPlayers[this.currentPlayerId].sprites.shoes.flipX = false;
-            this.allPlayers[this.currentPlayerId].sprites.clothes.flipX = false;
+            flipPlayerX(this.allPlayers[this.currentPlayerId].sprites)
           } else {
-            this.allPlayers[this.currentPlayerId].sprites.body.flipX = true;
-            this.allPlayers[this.currentPlayerId].sprites.shoes.flipX = true;
-            this.allPlayers[this.currentPlayerId].sprites.clothes.flipX = true;
+            flipPlayerX(this.allPlayers[this.currentPlayerId].sprites, true)
           }
         }
         const target = {
@@ -249,13 +266,9 @@ export default class Game extends Phaser.Scene {
           }
           if (this.allPlayers[player.id].sprites.body) {
             if (this.allPlayers[player.id].sprites.body.x < player.target.x) {
-              this.allPlayers[player.id].sprites.body.flipX = false;
-              this.allPlayers[player.id].sprites.shoes.flipX = false;
-              this.allPlayers[player.id].sprites.clothes.flipX = false;
+              flipPlayerX(this.allPlayers[player.id].sprites)
             } else {
-              this.allPlayers[player.id].sprites.body.flipX = true;
-              this.allPlayers[player.id].sprites.shoes.flipX = true;
-              this.allPlayers[player.id].sprites.clothes.flipX = true;
+              flipPlayerX(this.allPlayers[player.id].sprites, true)
             }
           }
           if (this.instance1.remainigTime() === 5000) {
@@ -282,6 +295,11 @@ export default class Game extends Phaser.Scene {
     }, 2000);
   }
   update() {
+
+    if(!this.world || !this.spriteSystem){
+      return 
+    }
+    this.spriteSystem(this.world)
     let clientNow = Date.now();
     this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);
     this.clientLastUpdate = clientNow;
@@ -315,14 +333,16 @@ export default class Game extends Phaser.Scene {
           this.cameras.main.roundPixels = true;
         }
       }
-
+      console.log('!isNaN(this.clientDeltaTime)', !isNaN(this.clientDeltaTime))
       if (!isNaN(this.clientDeltaTime)) {
         if (this.allPlayers[key].sprites.body.x === Infinity) {
+          console.log('esto quiensaber que peod bug')
           this.allPlayers[key].sprites.body.x = 0;
           this.allPlayers[key].sprites.shoes.x = 0;
           this.allPlayers[key].sprites.clothes.x = 0;
         }
         if (this.allPlayers[key].sprites.body.y === Infinity) {
+          console.log('esto quiensaber que peod bug')
           this.allPlayers[key].sprites.body.y = 0;
           this.allPlayers[key].sprites.shoes.y = 0;
           this.allPlayers[key].sprites.clothes.y = 0;
@@ -391,7 +411,7 @@ export default class Game extends Phaser.Scene {
         }
       }
     }
-
+   
     if (
       this.pointerado.leftButtonDown() &&
       !this.pointerado.leftButtonReleased() &&
@@ -402,13 +422,9 @@ export default class Game extends Phaser.Scene {
           this.allPlayers[this.currentPlayerId].sprites.body.x <
           this.pointerado.worldX
         ) {
-          this.allPlayers[this.currentPlayerId].sprites.body.flipX = false;
-          this.allPlayers[this.currentPlayerId].sprites.shoes.flipX = false;
-          this.allPlayers[this.currentPlayerId].sprites.clothes.flipX = false;
+          flipPlayerX(this.allPlayers[this.currentPlayerId].sprites)
         } else {
-          this.allPlayers[this.currentPlayerId].sprites.body.flipX = true;
-          this.allPlayers[this.currentPlayerId].sprites.shoes.flipX = true;
-          this.allPlayers[this.currentPlayerId].sprites.clothes.flipX = true;
+          flipPlayerX(this.allPlayers[this.currentPlayerId].sprites, true)
         }
       }
       this.lobbyScene.socket.emit('player click', {
