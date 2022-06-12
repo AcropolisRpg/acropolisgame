@@ -1,17 +1,17 @@
 <template>
   <div class="home">
-    <Acropolis />
+    <Acropolis></Acropolis>
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import Acropolis from '@/components/Acropolis.vue'
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component';
+import Acropolis from '../components/Acropolis.vue'; // @ is an alias to /src
 
-export default {
-  name: 'Home',
+@Options({
   components: {
-    Acropolis
-  }
-}
+    Acropolis,
+  },
+})
+export default class Home extends Vue {}
 </script>

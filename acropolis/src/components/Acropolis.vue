@@ -77,8 +77,9 @@ let socket;
 // import TitleScreen from '../game/scenes/TileScreen'
 // import Web3 from 'web3';
 // import Web3Token from 'web3-token';
-
-export default {
+import { defineComponent } from 'vue'
+import { networkUpdateStateSystem } from '../game/systems/networkUpdateStateSystem';
+export default defineComponent({
   name: 'Acropolis',
   data() {
     return {
@@ -119,6 +120,13 @@ export default {
   },
   mounted() {
     socket.on('loggedIn', (isLoggedIn) => {
+
+      window.acropolis = {}
+      window.acropolis.networkSystem = networkUpdateStateSystem(socket)
+      // setInterval(() => {
+      // console.log(networkSystem.getLatestNetworkData())
+        
+      // }, 500);
       console.log('leand', isLoggedIn);
       this.isLoggedIn = isLoggedIn;
       setTimeout(() => {
@@ -134,10 +142,10 @@ export default {
         const game = new Phaser.Game(config);
         game.scene.add('acropolisGame', Game);
         game.scene.start('acropolisGame', { socket });
-      }, 2000);
+      }, 3000);
     });
   }
-};
+})
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
