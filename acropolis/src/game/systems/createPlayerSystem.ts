@@ -48,7 +48,6 @@ export const createPlayerSystem = () => {
       }
     }
     //update whole entitiesById
-    console.log('chale')
     window.acropolis.networkSystem.setNetworkEntities(playersByNetworkId)
     window.acropolis.networkSystem.setLocalEntities(playersByLocalId)
     return world;

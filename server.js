@@ -1,27 +1,31 @@
-const express = require('express');
-const Matter = require('matter-js');
-const dotenv = require('dotenv');
-const Web3Token = require('web3-token');
-const axios = require('axios');
-
-const {
+import express from 'express';
+import Matter from 'matter-js';
+import dotenv from 'dotenv';
+import Web3Token from 'web3-token';
+import axios from 'axios';
+import { v4 as uuid } from 'uuid';
+import { TargetPosition, Position, Velocity } from 
+'./server/components/components.js'
+import {
   createWorld,
   Types,
   defineComponent,
   defineQuery,
   addEntity,
   addComponent,
-  pipe
-} = require('bitecs');
+  pipe,
+  entityExists
+} from 
+'bitecs';
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import { createEntitiesSystem } from './server/systems/createEntitiesSystem.js';
+import { createPlayerSystem } from './server/systems/createPlayerSystem.js';
 
-//Define available components
-const Vector3 = { x: Types.f32, y: Types.f32, z: Types.f32 };
-const Position = defineComponent(Vector3);
-const Velocity = defineComponent(Vector3);
-const frameRate = 1000 / 60;
-
+//const frameRate = 1000 / 60;
+const frameRate = 500 ;
 //Query to retrieve entities matching components
-const movementQuery = defineQuery([Position, Velocity]);
+const movementQuery = defineQuery([Position, TargetPosition]);
 
 //System to execute behavior based on components query
 const movementSystem = (world) => {
@@ -33,7 +37,26 @@ const movementSystem = (world) => {
     const eid = ents[i];
     Position.x[eid] += Velocity.x[eid] * deltaTime;
     Position.y[eid] += Velocity.y[eid] * deltaTime;
-    Position.z[eid] += Velocity.z[eid] * deltaTime;
+
+    // let force = 2 * dt;
+    // const deltaVector = Matter.Vector.sub(
+    //   player.transform.position,
+    //   player.mousePosition
+    // );
+    // const normalizedDelta = Matter.Vector.normalise(deltaVector);
+    // let forceVector = Matter.Vector.mult(normalizedDelta, force);
+    // const target = Matter.Vector.sub(player.transform.position, forceVector);
+    // if (getDistance(player.mousePosition, player.transform.position) > 1) {
+    //   // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
+    //   player.transform.x = Math.round(
+    //     lerp(player.transform.position.x, target.x, dt)
+    //   );
+    //   player.transform.y = Math.round(
+    //     lerp(player.transform.position.y, target.y, dt)
+    //   );
+    //   Matter.Body.setPosition(player.transform, target);
+    // }
+
   }
   return world;
 };
@@ -86,6 +109,10 @@ addComponent(world, Velocity, eid);
 Velocity.x[eid] = 1;
 Velocity.y[eid] = 1;
 
+const engine = Matter.Engine.create();
+
+  const entitiesSystem = createEntitiesSystem()
+  const playerSystem = createPlayerSystem(engine)
 // execute the systems for world entity
 // setInterval(() => {
 //   pipeline(world);
@@ -104,9 +131,11 @@ Velocity.y[eid] = 1;
 //   );
 // }, frameRate);
 
+
+
 const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const httpServer = createServer(app);
+const io = new Server(httpServer)
 
 app.use(express.static('acropolis/dist'));
 dotenv.config();
@@ -156,7 +185,41 @@ const entities = {
   ]
 };
 
-const engine = Matter.Engine.create();
+// this will track entities commands from clients while they are existing.
+global.newEntities = [
+  {
+    id: uuid(),
+    components: {
+      transform: Matter.Bodies.rectangle(
+        canvas.width / 2,
+        0,
+        canvas.width,
+        wallThickness,
+        {
+          isStatic: true
+        }
+      ),
+      position:{
+        x:0,
+        y:0
+      },
+      target:{
+        x:0,
+        y:0
+      },
+      actions:'',
+      type: 'wall',
+    }
+  }
+];
+
+
+global.entitiesByNetworkId = {};
+global.entitiesByLocalId = {};
+
+
+console.log('newEntities');
+
 engine.gravity.y = 0;
 engine.gravity.x = 0;
 Matter.Composite.add(engine.world, Object.values(entities).flat());
@@ -180,6 +243,8 @@ function lerp(start, end, amt) {
 }
 
 setInterval(() => {
+  entitiesSystem(world)
+  playerSystem(world)
   let now = Date.now();
   dt = (now - lastUpdate) / frameRate;
   // console.log('correction', dt / lastDelta)
@@ -254,19 +319,28 @@ io.on('connection', (socket) => {
       qSkill: null
     }
   };
+  const newEntity = {
+    id: uuid(),
+    components:{
+      type: 'player'
+    }
+  }
+  global.newEntities.push(newEntity)
   //Entities will have the state of every object in the game
   entities.players.push(newPlayer);
   //Here we add the new player to the matter js world to interact with other objects
-  Matter.Composite.add(engine.world, newPlayer.transform);
+  // Matter.Composite.add(engine.world, newPlayer.transform);
   //Here we listen/receive the connected player events.
   socket.on('disconnect', () => {
-    --online;
-
-    Matter.World.remove(engine.world, newPlayer.transform);
-    entities.players = entities.players.filter(
-      (player) => player.id !== newPlayer.id
+    global.newEntities = global.newEntities.filter((player) => 
+    player.id !== newEntity.id
     );
-
+    console.log('disconnected', newEntity.id)
+    // --online;
+    // Matter.World.remove(engine.world, newPlayer.transform);
+    // entities.players = entities.players.filter(
+    //   (player) => player.id !== newPlayer.id
+    // );
   });
   socket.on('register', (cb) => cb(socket.id));
   socket.on('player click', (coordinates) => {
@@ -276,35 +350,39 @@ io.on('connection', (socket) => {
 
   socket.on('login', async (authToken) => {
     try {
-      const token = authToken
+      const token = authToken;
       const { address, body } = await Web3Token.verify(token);
       if (address) {
-        console.log('address body', address, body)
-        const  wallets =  await axios({
-          method:'get',
-          url: 'https://www.acropolisrpg.com/api/wallets',
-        })
-        console.log('wallets',wallets.data)
-        const wallet = wallets.data.find( (wallet)=> wallet.address.toString().toUpperCase() === address.toString().toUpperCase())
-        console.log('existe', wallet)
-        socket.emit("loggedIn", true);
+        console.log('address body', address, body);
+        const wallets = await axios({
+          method: 'get',
+          url: 'https://www.acropolisrpg.com/api/wallets'
+        });
+        console.log('wallets', wallets.data);
+        const wallet = wallets.data.find(
+          (wallet) =>
+            wallet.address.toString().toUpperCase() ===
+            address.toString().toUpperCase()
+        );
+        console.log('existe', wallet);
+        socket.emit('loggedIn', true);
         try {
-          const  nonce =  await axios({
-            method:'get',
-            url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`,
-          })
-          console.log(nonce)
+          const nonce = await axios({
+            method: 'get',
+            url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`
+          });
+          console.log(nonce);
           const claimed = await axios({
-            method:'get',
-            url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`,
-          })
-          console.log(claimed)
+            method: 'get',
+            url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`
+          });
+          console.log(claimed);
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
-      } 
+      }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   });
   socket.on('player q', () => {
@@ -337,6 +415,4 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(1234, () =>
-  console.log('server listening on ' + 1234)
-);
+httpServer.listen(1234, () => console.log('server listening on ' + 1234));
