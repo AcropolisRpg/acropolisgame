@@ -115,22 +115,22 @@ export default class Game extends Phaser.Scene {
     // Sprite.texture[player] = 0
     // this.spriteSystem = createSpriteSystem(this, ['bodySpriteSheet','clothesSpriteSheet','shoesSpriteSheet'])
 
-    // //Build Map
-    // const map = this.make.tilemap({
-    //   key: 'forestkey',
-    //   tileWidth: 16,
-    //   tileHeight: 16
-    // });
-    // const tileset = map.addTilesetImage('atlas', 'atlas');
-    // map.createLayer('piso', tileset, 0, 0);
-    // map.createLayer('caminos', tileset, 0, 0);
-    // map.createLayer('plantas', tileset, 0, 0);
-    // map.createLayer('construcciones', tileset, 0, 0);
-    // // Crete player Animations
-    // animatedPlayer(this);
+    //Build Map
+    const map = this.make.tilemap({
+      key: 'forestkey',
+      tileWidth: 16,
+      tileHeight: 16
+    });
+    const tileset = map.addTilesetImage('atlas', 'atlas');
+    map.createLayer('piso', tileset, 0, 0);
+    map.createLayer('caminos', tileset, 0, 0);
+    map.createLayer('plantas', tileset, 0, 0);
+    map.createLayer('construcciones', tileset, 0, 0);
+    // Crete player Animations
+    animatedPlayer(this);
 
-    // //Restrict camera maximum movement
-    // this.cameras.main.setBounds(0, 0, 1000, 1000);
+    //Restrict camera maximum movement
+    this.cameras.main.setBounds(0, 0, 1000, 1000);
 
     // //Time Management?
     // this.clientLastUpdate = Date.now();

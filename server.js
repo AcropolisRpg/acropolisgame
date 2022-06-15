@@ -20,7 +20,43 @@ import {
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { createEntitiesSystem } from './server/systems/createEntitiesSystem.js';
-import { createPlayerSystem } from './server/systems/createPlayerSystem.js';
+import { createPlayerTransformSystem } from './server/systems/createPlayerTransformSystem.js';
+import { createPlayerTargetMovementSystem } from './server/systems/createPlayerTargetMovementSystem.js';
+import { createBroadcastNetworkSystem } from './server/systems/createNetworkBroadcastPlayerSystem.js';
+
+
+
+global.entitiesByNetworkId = {};
+global.entitiesByLocalId = {};
+global.broadcastNetworkClient = {};
+// this will track entities commands from clients while they are existing.
+global.networkEntities = {}
+//  [
+  // {
+  //   id: uuid(),
+  //   components: {
+  //     transform: Matter.Bodies.rectangle(
+  //       canvas.width / 2,
+  //       0,
+  //       canvas.width,
+  //       wallThickness,
+  //       {
+  //         isStatic: true
+  //       }
+  //     ),
+  //     position:{
+  //       x:0,
+  //       y:0
+  //     },
+  //     target:{
+  //       x:500,
+  //       y:500
+  //     },
+  //     actions:'',
+  //     type: 'player',
+  //   }
+  // }
+// ];
 
 //const frameRate = 1000 / 60;
 const frameRate = 500 ;
@@ -112,7 +148,9 @@ Velocity.y[eid] = 1;
 const engine = Matter.Engine.create();
 
   const entitiesSystem = createEntitiesSystem()
-  const playerSystem = createPlayerSystem(engine)
+  const playerTransformSystem = createPlayerTransformSystem(engine)
+  const playerTargetMovementSystem =  createPlayerTargetMovementSystem()
+  const broadcastNetworkSystem = createBroadcastNetworkSystem()
 // execute the systems for world entity
 // setInterval(() => {
 //   pipeline(world);
@@ -185,40 +223,11 @@ const entities = {
   ]
 };
 
-// this will track entities commands from clients while they are existing.
-global.newEntities = [
-  {
-    id: uuid(),
-    components: {
-      transform: Matter.Bodies.rectangle(
-        canvas.width / 2,
-        0,
-        canvas.width,
-        wallThickness,
-        {
-          isStatic: true
-        }
-      ),
-      position:{
-        x:0,
-        y:0
-      },
-      target:{
-        x:0,
-        y:0
-      },
-      actions:'',
-      type: 'wall',
-    }
-  }
-];
 
 
-global.entitiesByNetworkId = {};
-global.entitiesByLocalId = {};
 
 
-console.log('newEntities');
+console.log('networkEntities');
 
 engine.gravity.y = 0;
 engine.gravity.x = 0;
@@ -230,7 +239,6 @@ const player = entities.player;
 let lastUpdate = Date.now();
 let lastDelta = Date.now();
 let dt;
-let fuerzaX = 100;
 
 function getDistance(Vector1, Vector2) {
   return Math.sqrt(
@@ -243,10 +251,9 @@ function lerp(start, end, amt) {
 }
 
 setInterval(() => {
-  entitiesSystem(world)
-  playerSystem(world)
   let now = Date.now();
   dt = (now - lastUpdate) / frameRate;
+  global.dt = dt
   // console.log('correction', dt / lastDelta)
   let correction = dt / lastDelta;
   lastDelta = dt;
@@ -255,7 +262,10 @@ setInterval(() => {
   let fps = 1000 / (now - lastUpdate);
   // console.log(now - lastUpdate, dt, frameRate, fps)
   lastUpdate = now;
-
+  entitiesSystem(world)
+  playerTransformSystem(world)
+  playerTargetMovementSystem(world)
+  broadcastNetworkSystem(world)
   io.emit('update state', {
     //boxes: entities.boxes.map(toVertices),
     walls: entities.walls.map(toVertices),
@@ -271,6 +281,8 @@ setInterval(() => {
     online,
     fps
   });
+
+  io.emit('broadcastNetworkClient', global.broadcastNetworkClient);
 
   entities.players.forEach((player) => {
     if (entities.players[player.id]?.skills?.qSkill?.transform) {
@@ -301,6 +313,7 @@ setInterval(() => {
 
 //Each connection will manage his own data
 io.on('connection', (socket) => {
+  // console.log('se esta conectando como pndjo')
   online++;
   //Here we create a Matter js circle transform
   let playerTransform = Matter.Bodies.rectangle(
@@ -319,23 +332,26 @@ io.on('connection', (socket) => {
       qSkill: null
     }
   };
+  const entityId = uuid()
   const newEntity = {
-    id: uuid(),
-    components:{
-      type: 'player'
-    }
+    id: entityId, 
+    type: 'player',
+    position: {x:0,y:0},
+    target: {x:500, y:500}
   }
-  global.newEntities.push(newEntity)
+  global.networkEntities[entityId] = newEntity
+  // console.log(global.networkEntities)
   //Entities will have the state of every object in the game
   entities.players.push(newPlayer);
   //Here we add the new player to the matter js world to interact with other objects
   // Matter.Composite.add(engine.world, newPlayer.transform);
   //Here we listen/receive the connected player events.
   socket.on('disconnect', () => {
-    global.newEntities = global.newEntities.filter((player) => 
-    player.id !== newEntity.id
-    );
-    console.log('disconnected', newEntity.id)
+    delete global.networkEntities[entityId]
+    // global.networkEntities = global.networkEntities.filter((player) => 
+    // player.id !== newEntity.id
+    // );
+    console.log('disconnected', entityId)
     // --online;
     // Matter.World.remove(engine.world, newPlayer.transform);
     // entities.players = entities.players.filter(
@@ -345,45 +361,47 @@ io.on('connection', (socket) => {
   socket.on('register', (cb) => cb(socket.id));
   socket.on('player click', (coordinates) => {
     // console.log(coordinates);
+    global.networkEntities[entityId].target = coordinates 
     newPlayer.mousePosition = coordinates;
   });
 
   socket.on('login', async (authToken) => {
-    try {
-      const token = authToken;
-      const { address, body } = await Web3Token.verify(token);
-      if (address) {
-        console.log('address body', address, body);
-        const wallets = await axios({
-          method: 'get',
-          url: 'https://www.acropolisrpg.com/api/wallets'
-        });
-        console.log('wallets', wallets.data);
-        const wallet = wallets.data.find(
-          (wallet) =>
-            wallet.address.toString().toUpperCase() ===
-            address.toString().toUpperCase()
-        );
-        console.log('existe', wallet);
-        socket.emit('loggedIn', true);
-        try {
-          const nonce = await axios({
-            method: 'get',
-            url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`
-          });
-          console.log(nonce);
-          const claimed = await axios({
-            method: 'get',
-            url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`
-          });
-          console.log(claimed);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    socket.emit('loggedIn', true);
+    // try {
+    //   const token = authToken;
+    //   const { address, body } = await Web3Token.verify(token);
+    //   if (address) {
+    //     console.log('address body', address, body);
+    //     const wallets = await axios({
+    //       method: 'get',
+    //       url: 'https://www.acropolisrpg.com/api/wallets'
+    //     });
+    //     console.log('wallets', wallets.data);
+    //     const wallet = wallets.data.find(
+    //       (wallet) =>
+    //         wallet.address.toString().toUpperCase() ===
+    //         address.toString().toUpperCase()
+    //     );
+    //     console.log('existe', wallet);
+    //     socket.emit('loggedIn', true);
+    //     try {
+    //       const nonce = await axios({
+    //         method: 'get',
+    //         url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`
+    //       });
+    //       console.log(nonce);
+    //       const claimed = await axios({
+    //         method: 'get',
+    //         url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`
+    //       });
+    //       console.log(claimed);
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
   });
   socket.on('player q', () => {
     // console.log('cvalior ', newPlayer.id, entities.players);

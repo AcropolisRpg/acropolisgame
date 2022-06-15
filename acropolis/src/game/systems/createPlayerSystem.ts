@@ -13,34 +13,35 @@ export const createPlayerSystem = () => {
   const playersByNetworkId = {};
   const playersByLocalId = {};
   return defineSystem((world) => {
-    const networkData = window.acropolis.networkSystem.getLatestNetworkData();
-    const currentPlayers = networkData.players;
-    console.log(playersByNetworkId);
-    currentPlayers.forEach((player) => {
+    const currentEntities = window.acropolis.networkSystem.getLatestNetworkData();
+    // const currentEntities = networkData.players;
+    // console.log(playersByNetworkId);
+    // currentPlayers.forEach((player) => {
+    for (const [entityId, entity] of Object.entries(currentEntities)) {
       if (
-        playersByNetworkId?.[player.id] >= 0 &&
-        entityExists(world, playersByNetworkId[player.id])
+        playersByNetworkId?.[entityId] >= 0 &&
+        entityExists(world, playersByNetworkId[entityId])
       ) {
-        return;
+        continue;
       }
       const playerId = addEntity(world);
-      playersByNetworkId[player.id] = playerId;
-      playersByLocalId[playerId] = player;
+      playersByNetworkId[entityId] = playerId;
+      playersByLocalId[playerId] = entityId;
       addComponent(world, Position, playerId);
       addComponent(world, Body, playerId);
       addComponent(world, Shoes, playerId);
       addComponent(world, Clothes, playerId);
       addComponent(world, TargetPosition, playerId);
       addComponent(world, Actions, playerId);
-    });
+    }
 
     for (const [key, value] of Object.entries<any>(playersByNetworkId)) {
       let exist = false;
-      currentPlayers.forEach((player) => {
-        if (key === player.id) {
+      for (const [entityId, entity] of Object.entries(currentEntities)) {
+        if (key === entityId) {
           exist = true;
         }
-      });
+      }
       if (!exist) {
         removeEntity(world, value);
         delete playersByNetworkId[key];
