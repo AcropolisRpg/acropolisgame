@@ -11,22 +11,31 @@ import { Body, Shoes, Clothes } from '../components/sprite';
 
 export const createPlayerSystem = () => {
   const playersByNetworkId = {};
-  const playersByLocalId = {};
   return defineSystem((world) => {
-    const currentEntities = window.acropolis.networkSystem.getLatestNetworkData();
-    // const currentEntities = networkData.players;
+    const networkEntities = window.acropolis.networkSystem.getNetworkEntities()
+    const localEntitiesIds = window.acropolis.networkSystem.getNetworkEntitiesIDsByLocalID()
+    const localEntitiesByNetworkId = window.acropolis.networkSystem.getLocalEntitiesIDsByNetworkID()
+    // const networkEntities = networkData.players;
     // console.log(playersByNetworkId);
     // currentPlayers.forEach((player) => {
-    for (const [entityId, entity] of Object.entries(currentEntities)) {
+    for (const [entityId, entity] of Object.entries(networkEntities)) {
+      console.log('con una chingada',localEntitiesByNetworkId)
       if (
-        playersByNetworkId?.[entityId] >= 0 &&
-        entityExists(world, playersByNetworkId[entityId])
+        localEntitiesByNetworkId?.[entityId] >= 0 &&
+        entityExists(world, localEntitiesByNetworkId[entityId])
       ) {
         continue;
       }
       const playerId = addEntity(world);
-      playersByNetworkId[entityId] = playerId;
-      playersByLocalId[playerId] = entityId;
+      const clonedEntity = JSON.parse(JSON.stringify(entity))
+      window.acropolis.networkSystem.setLocalEntityByLocalId(playerId, clonedEntity)
+
+      // window.acropolis.networkSystem.setNetworkEntityByLocalId(playerId, clonedEntity)
+      // playersByNetworkId[entityId] = playerId;
+      // playersByLocalId[playerId] = entityId;
+
+      window.acropolis.networkSystem.setLocalEntityIDbyNetworkID(entityId, playerId)
+      window.acropolis.networkSystem.setNetworkEntityIDbyLocalID(entityId, playerId)
       addComponent(world, Position, playerId);
       addComponent(world, Body, playerId);
       addComponent(world, Shoes, playerId);
@@ -35,22 +44,26 @@ export const createPlayerSystem = () => {
       addComponent(world, Actions, playerId);
     }
 
-    for (const [key, value] of Object.entries<any>(playersByNetworkId)) {
+    for (const [networkId, localId] of Object.entries<any>(localEntitiesIds)) {
       let exist = false;
-      for (const [entityId, entity] of Object.entries(currentEntities)) {
-        if (key === entityId) {
+      for (const [entityId] of Object.entries(networkEntities)) {
+        if (networkId === entityId) {
           exist = true;
         }
       }
       if (!exist) {
-        removeEntity(world, value);
-        delete playersByNetworkId[key];
-        delete playersByLocalId[value];
+        removeEntity(world, localId);
+        window.acropolis.networkSystem.deleteNetworkEntitiesIDsByLocalID(localId)
+        window.acropolis.networkSystem.deleteLocalEntitiesIDsByNetworkID(networkId)
+        window.acropolis.networkSystem.deleteLocalEntity(localId)
+        // delete playersByNetworkId[key];
+        // delete playersByLocalId[value];
       }
     }
     //update whole entitiesById
-    window.acropolis.networkSystem.setNetworkEntities(playersByNetworkId)
-    window.acropolis.networkSystem.setLocalEntities(playersByLocalId)
+    // window.acropolis.networkSystem.setNetworkEntitiesIDbyLocalID(playersByNetworkId)
+    // window.acropolis.networkSystem.setLocalEntitiesIDsByNetworkID(playersByLocalId)
+    // console.log(playersByNetworkId, playersByLocalId)
     return world;
   });
 };

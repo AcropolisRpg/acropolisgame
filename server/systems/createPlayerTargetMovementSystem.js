@@ -25,16 +25,14 @@ export const createPlayerTargetMovementSystem = () => {
       }
       TargetPosition.x[id] =  networkEntity.target.x
       TargetPosition.y[id] =  networkEntity.target.y
+      console.log('sistema de nada')
     }
 
     const entities = moveEntityQuery(world)
     for (let i = 0; i < entities.length; i++) {
+      console.log('epal?')
       const id = entities[i];
       const networkEntity = global.networkEntities[global.entitiesByLocalId[id]];
-      const entity = entities[id];
-      if (!entity) {
-        continue;
-      }
       if (!networkEntity.target) {
         continue;
       }
@@ -54,7 +52,9 @@ export const createPlayerTargetMovementSystem = () => {
       const normalizedDelta = Matter.Vector.normalise(deltaVector)
       let forceVector = Matter.Vector.mult(normalizedDelta, force)
       const target = Matter.Vector.sub(playerPosition, forceVector)
+      console.log('que pedo1')
       if (getDistance(networkEntity.target, playerPosition) > 1) {
+        console.log('que pedo2')
         playerPosition.x = Math.round(
           lerp(playerPosition.x, target.x, dt)
         );
@@ -69,6 +69,7 @@ export const createPlayerTargetMovementSystem = () => {
         Matter.Body.setPosition(global.networkEntities[global.entitiesByLocalId[id]].transform, target)
         // Update Network Object current position 
         // Because position will be always determined by the server bye..
+        console.log(networkEntity)
         networkEntity.position.x = Position.x[id]
         networkEntity.position.y = Position.y[id]
       }

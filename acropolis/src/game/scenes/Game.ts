@@ -98,6 +98,7 @@ export default class Game extends Phaser.Scene {
     //   this.playerSystem(this.world)
     // },500)
     this.targetMovementSystem = createTargetMovementSystem()
+    this.spriteSystem = createSpriteSystem(this, ['bodySpriteSheet','clothesSpriteSheet','shoesSpriteSheet'])
 
 
 
@@ -113,7 +114,6 @@ export default class Game extends Phaser.Scene {
     // Velocity.y[player] = 100
     // addComponent(this.world, Sprite, player)
     // Sprite.texture[player] = 0
-    // this.spriteSystem = createSpriteSystem(this, ['bodySpriteSheet','clothesSpriteSheet','shoesSpriteSheet'])
 
     //Build Map
     const map = this.make.tilemap({
@@ -340,15 +340,24 @@ export default class Game extends Phaser.Scene {
     // setTimeout(() => {
     //   gameController(this, this.allPlayers[this.currentPlayerId]);
     // }, 2000);
+    setInterval( ()=>{
+      this.cameras.main.zoom =0.5;
+      if(!this.world || !this.spriteSystem || !this.playerSystem || !this.targetMovementSystem){
+        // console.log('entra aca', !this.world || !this.spriteSystem || this.playerSystem || this.targetMovementSystem)
+        return 
+      }
+      // console.log('inicia los sistemad')
+      this.playerSystem(this.world)
+      this.targetMovementSystem(this.world)
+      this.spriteSystem(this.world)
+    }, 500)
   }
+
+
   update() {
-    this.playerSystem(this.world)
-    this.targetMovementSystem(this.world)
+
   }
-    // if(!this.world || !this.spriteSystem){
-    //   return 
-    // }
-    // this.spriteSystem(this.world)
+  
   //   const clientNow = Date.now();
   //   this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);
   //   this.clientLastUpdate = clientNow;

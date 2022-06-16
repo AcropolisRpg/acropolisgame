@@ -11,6 +11,7 @@ export const createBroadcastNetworkSystem = () => {
     global.broadcastNetworkClient = {}
     for (const [networkEntityId, networkEntity] of Object.entries(global.networkEntities)) {
       const { position, type } = networkEntity;
+      console.log('position', position)
       // console.log('lenfiadfasdf', networkEntity, position, type)
       global.broadcastNetworkClient[networkEntityId] = { position, type };
     }
