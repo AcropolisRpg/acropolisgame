@@ -20,6 +20,7 @@ import { Sprite } from '../components/sprite';
 import { createSpriteSystem } from '../systems/createSpriteSystem';
 import { createPlayerSystem } from '../systems/createPlayerSystem';
 import { createTargetMovementSystem } from './../systems/createTargetMovementSystem';
+import { createTimeSystem } from '../systems/createTimeSystem';
 
 declare global {
   interface Window { acropolis: any }
@@ -45,6 +46,7 @@ export default class Game extends Phaser.Scene {
   private clientLastDelta
   private playerSystem
   private targetMovementSystem
+  private timeSystem
 
   // constructor()
 	// {
@@ -92,13 +94,14 @@ export default class Game extends Phaser.Scene {
 
     // console.log(globalThis.acropolis.networkUpdateStateSystem.getLatestNetworkData())
     this.world = createWorld()
+    this.timeSystem = createTimeSystem()
     this.playerSystem = createPlayerSystem()
     // setInterval( ()=>{
     //   console.log('tumadre')
     //   this.playerSystem(this.world)
     // },500)
-    this.targetMovementSystem = createTargetMovementSystem()
     this.spriteSystem = createSpriteSystem(this, ['bodySpriteSheet','clothesSpriteSheet','shoesSpriteSheet'])
+    this.targetMovementSystem = createTargetMovementSystem(this, this.lobbyScene.socket)
 
 
 
@@ -340,23 +343,24 @@ export default class Game extends Phaser.Scene {
     // setTimeout(() => {
     //   gameController(this, this.allPlayers[this.currentPlayerId]);
     // }, 2000);
+
     setInterval( ()=>{
-      this.cameras.main.zoom =0.5;
-      if(!this.world || !this.spriteSystem || !this.playerSystem || !this.targetMovementSystem){
+      
+      if(!this.world || !this.spriteSystem || !this.playerSystem || !this.targetMovementSystem || !this.timeSystem){
         // console.log('entra aca', !this.world || !this.spriteSystem || this.playerSystem || this.targetMovementSystem)
         return 
       }
-      // console.log('inicia los sistemad')
+      this.timeSystem(this.world)
       this.playerSystem(this.world)
       this.targetMovementSystem(this.world)
       this.spriteSystem(this.world)
-    }, 500)
+    }, window.acropolis.timeSystem.frameRate )
   }
 
 
-  update() {
+  // update() {
 
-  }
+  // }
   
   //   const clientNow = Date.now();
   //   this.clientDeltaTime = (clientNow - this.clientLastUpdate) / (1000 / 60);

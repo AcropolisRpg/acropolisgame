@@ -1,6 +1,7 @@
 const playerPlayAnimation = (scene, animationKey, playerInstance) => {
   switch (animationKey) {
     case 'running':
+      console.log('running')
       playerInstance.sprites.body.play({ key: 'running' });
       playerInstance.sprites.shoes.play({
         key: 'runningShoes'
@@ -10,6 +11,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       });
       break;
     case 'idle':
+      console.log('idle')
       playerInstance.sprites.body.play({ key: 'idle' });
       playerInstance.sprites.shoes.play({
         key: 'idleShoes'

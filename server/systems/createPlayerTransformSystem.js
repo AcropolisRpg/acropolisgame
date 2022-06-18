@@ -7,7 +7,6 @@ import { defineQuery, defineSystem, enterQuery, exitQuery } from 'bitecs';
 import Matter from 'matter-js';
 
 export const createPlayerTransformSystem = (engine) => {
-  const playersById = {};
   const playerSize = 16;
   const canvas = { width: 1000, height: 1000 };
   const playerQuery = defineQuery([TransformRectangle, Player]);
@@ -25,32 +24,12 @@ export const createPlayerTransformSystem = (engine) => {
           playerSize,
           playerSize * 1.25
         )
-      console.log('el chingado transform',global.networkEntities[global.entitiesByLocalId[id]].transform)
-      console.log(global.networkEntities)
       const { transform } = global.networkEntities[global.entitiesByLocalId[id]];
-      // const player = playersById[id];
       Matter.Composite.add(engine.world, transform);
-      transform.x = 0;
-      transform.y = 0;
-      Position.x[id] = transform.x;
-      Position.y[id] = transform.y;
-      // console.log('gadaver',global.entitiesByLocalId[id].id ,global.networkEntities)
-      // global.networkEntities[global.entitiesByLocalId[id].id].position = {x: Position.x[id], y: Position.y[id]}
-      // console.log('nosni',playersById[id], player)
-    }
-
-    const entities = playerQuery(world);
-    for (let i = 0; i < entities.length; i++) {
-      const id = entities[i];
-      const player =
-        global.networkEntities[global.entitiesByLocalId[id]].transform;
-      if (!player) {
-        continue;
-      }
-      player.x = Position.x[id];
-      player.y = Position.y[id];
-      // console.log('curren entities', entities);
-      // global.networkEntities[global.entitiesByLocalId[id].id].components.position = {x: Position.x[id], y: Position.y[id]}
+      transform.position.x = 500;
+      transform.position.y = 500;
+      Position.x[id] = transform.position.x;
+      Position.y[id] = transform.position.y;
     }
 
     const exitEntities = playerQueryExit(world);

@@ -21,9 +21,7 @@ export const createEntitiesSystem = () => {
   const entitiesByLocalId = global.entitiesByLocalId;
   return defineSystem((world) => {
     const currentEntities = global.networkEntities;
-    // console.log(global.networkEntities);
     for (const [networkEntityId, networkEntity] of Object.entries(currentEntities)) {
-      // console.log('imprime la chingada', entitiesByNetworkId, entityExists(world, entitiesByNetworkId[networkEntityId]))
       if (
         entitiesByNetworkId?.[networkEntityId] >= 0 &&
         entityExists(world, entitiesByNetworkId[networkEntityId])
@@ -42,21 +40,11 @@ export const createEntitiesSystem = () => {
         addComponent(world, Actions, entityId);
         addComponent(world, TransformRectangle, entityId);
         addComponent(world, Player, entityId);
-        // console.log( 'adddeed entities', entitiesByNetworkId, entitiesByLocalId)
       }
     }
-    // console.log('debe entrar ahuevo')
-    for (const [key , value] of Object.entries(global.entitiesByNetworkId)) {
-      let exist = false;
-      for (const [networkEntityId, networkEntity] of Object.entries(currentEntities)) {
-        if (key === networkEntityId) {
-          exist = true;
-        }
-      }
-      if (!exist) {
-        removeEntity(world, value);
-        delete entitiesByNetworkId[key];
-        delete entitiesByLocalId[value];
+    for (const [eid, entity] of Object.entries(global.networkEntities)) {
+      if (entity.destroyed) {
+        removeEntity(world, global.entitiesByNetworkId[eid]);
       }
     }
 

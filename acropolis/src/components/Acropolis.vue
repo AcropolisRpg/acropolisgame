@@ -78,7 +78,7 @@ let socket;
 // import Web3 from 'web3';
 // import Web3Token from 'web3-token';
 import { defineComponent } from 'vue'
-import { networkUpdateStateSystem } from '../game/systems/networkUpdateStateSystem';
+import { networkUpdateStateSystem } from '../../../shared/networkUpdateStateSystem';
 export default defineComponent({
   name: 'Acropolis',
   data() {
@@ -120,15 +120,12 @@ export default defineComponent({
     }
   },
   mounted() {
-    socket.on('loggedIn', (isLoggedIn) => {
-
+    socket.on('loggedIn', (data) => {
+      const {isLoggedIn, entityId} = data
       window.acropolis = {}
       window.acropolis.networkSystem = networkUpdateStateSystem(socket)
-      // setInterval(() => {
-      // console.log(networkSystem.getLatestNetworkData())
-        
-      // }, 500);
-      console.log('leand', isLoggedIn);
+      window.acropolis.currentPlayerId = entityId
+      window.acropolis.socket = socket
       this.isLoggedIn = isLoggedIn;
       setTimeout(() => {
         const config = {

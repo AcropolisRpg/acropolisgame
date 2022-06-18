@@ -23,14 +23,20 @@ import { createEntitiesSystem } from './server/systems/createEntitiesSystem.js';
 import { createPlayerTransformSystem } from './server/systems/createPlayerTransformSystem.js';
 import { createPlayerTargetMovementSystem } from './server/systems/createPlayerTargetMovementSystem.js';
 import { createBroadcastNetworkSystem } from './server/systems/createNetworkBroadcastPlayerSystem.js';
+import { createDestroyEntitiesSystem } from './server/systems/createDestroyEntitiesSystem.js';
 
 
 
 global.entitiesByNetworkId = {};
 global.entitiesByLocalId = {};
 global.broadcastNetworkClient = {};
+
 // this will track entities commands from clients while they are existing.
 global.networkEntities = {}
+
+// This will track the local data for example matterJS objects
+global.localEntities = {}
+
 //  [
   // {
   //   id: uuid(),
@@ -58,8 +64,8 @@ global.networkEntities = {}
   // }
 // ];
 
-//const frameRate = 1000 / 60;
-const frameRate = 500 ;
+const frameRate = 1000 / 60;
+// const frameRate = 500 ;
 //Query to retrieve entities matching components
 const movementQuery = defineQuery([Position, TargetPosition]);
 
@@ -149,7 +155,8 @@ const engine = Matter.Engine.create();
 
   const entitiesSystem = createEntitiesSystem()
   const playerTransformSystem = createPlayerTransformSystem(engine)
-  const playerTargetMovementSystem =  createPlayerTargetMovementSystem()
+  const playerTargetMovementSystem =  createPlayerTargetMovementSystem(engine)
+  const destroyEntitiesSystem = createDestroyEntitiesSystem()
   const broadcastNetworkSystem = createBroadcastNetworkSystem()
 // execute the systems for world entity
 // setInterval(() => {
@@ -227,7 +234,7 @@ const entities = {
 
 
 
-console.log('networkEntities');
+// console.log('networkEntities');
 
 engine.gravity.y = 0;
 engine.gravity.x = 0;
@@ -256,6 +263,7 @@ setInterval(() => {
   global.dt = dt
   // console.log('correction', dt / lastDelta)
   let correction = dt / lastDelta;
+  global.corretion = correction
   lastDelta = dt;
   //console.log('dt',dt, now, lastUpdate)
   //console.log('fps',1000/(now - lastUpdate))
@@ -265,73 +273,56 @@ setInterval(() => {
   entitiesSystem(world)
   playerTransformSystem(world)
   playerTargetMovementSystem(world)
+  destroyEntitiesSystem()
   broadcastNetworkSystem(world)
-  io.emit('update state', {
-    //boxes: entities.boxes.map(toVertices),
-    walls: entities.walls.map(toVertices),
-    // players: entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition})),
-    players: entities.players.map((player) => ({
-      position: player.transform.position,
-      id: player.id,
-      target: player.mousePosition,
-      skills: player.skills?.qSkill?.transform?.position
-        ? player.skills?.qSkill?.transform?.position
-        : null
-    })),
-    online,
-    fps
-  });
+
+  Matter.Engine.update(engine, dt, correction);
+  // io.emit('update state', {
+  //   //boxes: entities.boxes.map(toVertices),
+  //   walls: entities.walls.map(toVertices),
+  //   // players: entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition})),
+  //   players: entities.players.map((player) => ({
+  //     position: player.transform.position,
+  //     id: player.id,
+  //     target: player.mousePosition,
+  //     skills: player.skills?.qSkill?.transform?.position
+  //       ? player.skills?.qSkill?.transform?.position
+  //       : null
+  //   })),
+  //   online,
+  //   fps
+  // });
 
   io.emit('broadcastNetworkClient', global.broadcastNetworkClient);
 
-  entities.players.forEach((player) => {
-    if (entities.players[player.id]?.skills?.qSkill?.transform) {
-      // console.log(entities.players[player.id].skills.qSkill.transform);
-    }
+  // entities.players.forEach((player) => {
+  //   if (entities.players[player.id]?.skills?.qSkill?.transform) {
+  //     // console.log(entities.players[player.id].skills.qSkill.transform);
+  //   }
 
-    let force = 2 * dt;
-    const deltaVector = Matter.Vector.sub(
-      player.transform.position,
-      player.mousePosition
-    );
-    const normalizedDelta = Matter.Vector.normalise(deltaVector);
-    let forceVector = Matter.Vector.mult(normalizedDelta, force);
-    const target = Matter.Vector.sub(player.transform.position, forceVector);
-    if (getDistance(player.mousePosition, player.transform.position) > 1) {
-      // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
-      player.transform.x = Math.round(
-        lerp(player.transform.position.x, target.x, dt)
-      );
-      player.transform.y = Math.round(
-        lerp(player.transform.position.y, target.y, dt)
-      );
-      Matter.Body.setPosition(player.transform, target);
-    }
-  });
-  Matter.Engine.update(engine, dt, correction);
+  //   let force = 1 * dt;
+  //   const deltaVector = Matter.Vector.sub(
+  //     player.transform.position,
+  //     player.mousePosition
+  //   );
+  //   const normalizedDelta = Matter.Vector.normalise(deltaVector);
+  //   let forceVector = Matter.Vector.mult(normalizedDelta, force);
+  //   const target = Matter.Vector.sub(player.transform.position, forceVector);
+  //   if (getDistance(player.mousePosition, player.transform.position) > 1) {
+  //     // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
+  //     player.transform.x = Math.round(
+  //       lerp(player.transform.position.x, target.x, dt)
+  //     );
+  //     player.transform.y = Math.round(
+  //       lerp(player.transform.position.y, target.y, dt)
+  //     );
+  //     Matter.Body.setPosition(player.transform, target);
+  //   }
+  // });
 }, frameRate);
 
 //Each connection will manage his own data
 io.on('connection', (socket) => {
-  // console.log('se esta conectando como pndjo')
-  online++;
-  //Here we create a Matter js circle transform
-  let playerTransform = Matter.Bodies.rectangle(
-    canvas.width / 2,
-    canvas.height / 2,
-    playerSize,
-    playerSize * 1.25
-  );
-  // Here we create the player for the client that is requesting conection to join the game
-  const newPlayer = {
-    socket,
-    id: socket.id,
-    mousePosition: { x: canvas.width / 2, y: canvas.height / 2 },
-    transform: playerTransform,
-    skills: {
-      qSkill: null
-    }
-  };
   const entityId = uuid()
   const newEntity = {
     id: entityId, 
@@ -340,33 +331,18 @@ io.on('connection', (socket) => {
     target: {x:500, y:500}
   }
   global.networkEntities[entityId] = newEntity
-  // console.log(global.networkEntities)
-  //Entities will have the state of every object in the game
-  entities.players.push(newPlayer);
-  //Here we add the new player to the matter js world to interact with other objects
-  // Matter.Composite.add(engine.world, newPlayer.transform);
-  //Here we listen/receive the connected player events.
+  // entities.players.push(newPlayer);
   socket.on('disconnect', () => {
-    delete global.networkEntities[entityId]
-    // global.networkEntities = global.networkEntities.filter((player) => 
-    // player.id !== newEntity.id
-    // );
+    global.networkEntities[entityId].destroyed = true
     console.log('disconnected', entityId)
-    // --online;
-    // Matter.World.remove(engine.world, newPlayer.transform);
-    // entities.players = entities.players.filter(
-    //   (player) => player.id !== newPlayer.id
-    // );
   });
-  socket.on('register', (cb) => cb(socket.id));
   socket.on('player click', (coordinates) => {
-    // console.log(coordinates);
     global.networkEntities[entityId].target = coordinates 
-    newPlayer.mousePosition = coordinates;
+    // newPlayer.mousePosition = coordinates;
   });
 
   socket.on('login', async (authToken) => {
-    socket.emit('loggedIn', true);
+    socket.emit('loggedIn', {isLoggedIn: true, entityId});
     // try {
     //   const token = authToken;
     //   const { address, body } = await Web3Token.verify(token);
@@ -404,32 +380,7 @@ io.on('connection', (socket) => {
     // }
   });
   socket.on('player q', () => {
-    // console.log('cvalior ', newPlayer.id, entities.players);
 
-    entities.players.forEach((player) => {
-      if (player.id === newPlayer.id) {
-        if (player?.skills?.qSkill?.transform) {
-          // console.log('hay y remueve', player.skills.qSkill.transform);
-          Matter.World.remove(engine.world, player.skills.qSkill.transform);
-        }
-        player.skills.qSkill = {
-          transform: Matter.Bodies.circle(
-            newPlayer.transform.x,
-            newPlayer.transform.y - 40,
-            40
-          )
-        };
-        Matter.Composite.add(engine.world, player.skills.qSkill.transform);
-        // console.log('lala', player.skills.qSkill.transform);
-        setTimeout(() => {
-          // console.log('lali');
-          if (player?.skills?.qSkill?.transform) {
-            Matter.World.remove(engine.world, player.skills.qSkill.transform);
-          }
-          player.skills.qSkill = null;
-        }, 1000);
-      }
-    });
   });
 });
 

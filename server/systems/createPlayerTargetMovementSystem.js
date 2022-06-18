@@ -15,7 +15,6 @@ export const createPlayerTargetMovementSystem = () => {
     const enterEntities = moveEntityQueryEnter(world);
     for (let i = 0; i < enterEntities.length; i++) {
       const id = enterEntities[i];
-      // console.log('entitiesByLocalId',id, global.entitiesByLocalId, global.entitiesByLocalId[id])
       const networkEntity = global.networkEntities[global.entitiesByLocalId[id]];
       if (!networkEntity.target) {
         networkEntity.target = {
@@ -25,23 +24,19 @@ export const createPlayerTargetMovementSystem = () => {
       }
       TargetPosition.x[id] =  networkEntity.target.x
       TargetPosition.y[id] =  networkEntity.target.y
-      console.log('sistema de nada')
     }
 
     const entities = moveEntityQuery(world)
     for (let i = 0; i < entities.length; i++) {
-      console.log('epal?')
       const id = entities[i];
       const networkEntity = global.networkEntities[global.entitiesByLocalId[id]];
       if (!networkEntity.target) {
         continue;
       }
       const dt = global.dt
-      let force = 2 * dt
-      const playerPosition = {
-        x: Position.x[id],
-        y: Position.y[id]
-      }
+      let force = 1 * dt
+
+      const playerPosition = global.networkEntities[global.entitiesByLocalId[id]].transform.position
       const deltaVector = Matter.Vector.sub(
         playerPosition,
         networkEntity.target
@@ -52,26 +47,23 @@ export const createPlayerTargetMovementSystem = () => {
       const normalizedDelta = Matter.Vector.normalise(deltaVector)
       let forceVector = Matter.Vector.mult(normalizedDelta, force)
       const target = Matter.Vector.sub(playerPosition, forceVector)
-      console.log('que pedo1')
       if (getDistance(networkEntity.target, playerPosition) > 1) {
-        console.log('que pedo2')
-        playerPosition.x = Math.round(
-          lerp(playerPosition.x, target.x, dt)
-        );
-        playerPosition.y = Math.round(
-          lerp(playerPosition.y, target.y, dt)
-        );
-        // Update ECS current position
-        Position.x[id] = playerPosition.x
-        Position.y[id] = playerPosition.y
-        console.log(Position.x[id], Position.y[id])
+        // playerPosition.x = Math.round(
+        //   lerp(playerPosition.x, target.x, dt)
+        // );
+        // playerPosition.y = Math.round(
+        //   lerp(playerPosition.y, target.y, dt)
+        // );
         // Update MatterJS current position
         Matter.Body.setPosition(global.networkEntities[global.entitiesByLocalId[id]].transform, target)
+        // Update ECS current position
+        Position.x[id] = global.networkEntities[global.entitiesByLocalId[id]].transform.position.x
+        Position.y[id] = global.networkEntities[global.entitiesByLocalId[id]].transform.position.y
         // Update Network Object current position 
         // Because position will be always determined by the server bye..
-        console.log(networkEntity)
-        networkEntity.position.x = Position.x[id]
-        networkEntity.position.y = Position.y[id]
+        // console.log(networkEntity)
+        networkEntity.position.x = global.networkEntities[global.entitiesByLocalId[id]].transform.position.x
+        networkEntity.position.y = global.networkEntities[global.entitiesByLocalId[id]].transform.position.y
       }
     }
     return world;
