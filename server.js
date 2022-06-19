@@ -184,10 +184,12 @@ const tree = resourcesFactory('tree', 50, 50)
 const tree1 = resourcesFactory('tree', 150, 550)
 const tree2 = resourcesFactory('tree', 250, 250)
 const tree3 = resourcesFactory('tree', 350, 250)
+const herb = resourcesFactory('herb', 500, 500)
 global.networkEntities[tree.id] = tree
 global.networkEntities[tree1.id] = tree1
 global.networkEntities[tree2.id] = tree2
 global.networkEntities[tree3.id] = tree3
+global.networkEntities[herb.id] = herb
 
 console.log(global.networkEntities)
 // TODO Integrate tymesystem in the server...

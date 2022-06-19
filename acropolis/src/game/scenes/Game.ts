@@ -5,7 +5,7 @@ import {
   loadTilemapTiledJSON,
   loadSpritesheet
 } from '../phaserHelper/loaders';
-import { FRAME_SIZE_32_32, FRAME_SIZE_96_96 } from '../constants/constants';
+import { FRAME_SIZE_32_32, FRAME_SIZE_96_96, FRAME_SIZE_16_16 } from '../constants/constants';
 import animatedPlayer from '../systems/playerSpritesheetAnimations';
 import createGameControllerSystem from '../systems/createGameControllerSystem';
 import { createWorld } from 'bitecs';
@@ -69,9 +69,15 @@ export default class Game extends Phaser.Scene {
     );
     loadSpritesheet(
       this,
-      'globalNature',
+      'trees',
       '/game/nature/global.png',
       FRAME_SIZE_32_32
+    );
+    loadSpritesheet(
+      this,
+      'globalNature',
+      '/game/nature/global.png',
+      FRAME_SIZE_16_16
     );
   }
   create() {
