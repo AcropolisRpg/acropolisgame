@@ -4,104 +4,27 @@ import dotenv from 'dotenv';
 import Web3Token from 'web3-token';
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
-import { TargetPosition, Position, Velocity } from 
-'./server/components/components.js'
-import {
-  createWorld,
-  Types,
-  defineComponent,
-  defineQuery,
-  addEntity,
-  addComponent,
-  pipe,
-  entityExists
-} from 
-'bitecs';
-import { createServer } from 'http'
-import { Server } from 'socket.io'
+import { createWorld } from 'bitecs';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import { createEntitiesSystem } from './server/systems/createEntitiesSystem.js';
 import { createPlayerTransformSystem } from './server/systems/createPlayerTransformSystem.js';
 import { createPlayerTargetMovementSystem } from './server/systems/createPlayerTargetMovementSystem.js';
-import { createBroadcastNetworkSystem } from './server/systems/createNetworkBroadcastPlayerSystem.js';
+import { createBroadcastNetworkSystem } from './server/systems/createNetworkBroadcastSystem.js';
 import { createDestroyEntitiesSystem } from './server/systems/createDestroyEntitiesSystem.js';
-
-
+import { createResourceSystem } from './server/systems/createResourceSystem.js';
 
 global.entitiesByNetworkId = {};
 global.entitiesByLocalId = {};
 global.broadcastNetworkClient = {};
 
 // this will track entities commands from clients while they are existing.
-global.networkEntities = {}
+global.networkEntities = {};
 
 // This will track the local data for example matterJS objects
-global.localEntities = {}
-
-//  [
-  // {
-  //   id: uuid(),
-  //   components: {
-  //     transform: Matter.Bodies.rectangle(
-  //       canvas.width / 2,
-  //       0,
-  //       canvas.width,
-  //       wallThickness,
-  //       {
-  //         isStatic: true
-  //       }
-  //     ),
-  //     position:{
-  //       x:0,
-  //       y:0
-  //     },
-  //     target:{
-  //       x:500,
-  //       y:500
-  //     },
-  //     actions:'',
-  //     type: 'player',
-  //   }
-  // }
-// ];
+global.localEntities = {};
 
 const frameRate = 1000 / 60;
-// const frameRate = 500 ;
-//Query to retrieve entities matching components
-const movementQuery = defineQuery([Position, TargetPosition]);
-
-//System to execute behavior based on components query
-const movementSystem = (world) => {
-  const {
-    time: { deltaTime }
-  } = world;
-  const ents = movementQuery(world);
-  for (let i = 0; i < ents.length; i++) {
-    const eid = ents[i];
-    Position.x[eid] += Velocity.x[eid] * deltaTime;
-    Position.y[eid] += Velocity.y[eid] * deltaTime;
-
-    // let force = 2 * dt;
-    // const deltaVector = Matter.Vector.sub(
-    //   player.transform.position,
-    //   player.mousePosition
-    // );
-    // const normalizedDelta = Matter.Vector.normalise(deltaVector);
-    // let forceVector = Matter.Vector.mult(normalizedDelta, force);
-    // const target = Matter.Vector.sub(player.transform.position, forceVector);
-    // if (getDistance(player.mousePosition, player.transform.position) > 1) {
-    //   // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
-    //   player.transform.x = Math.round(
-    //     lerp(player.transform.position.x, target.x, dt)
-    //   );
-    //   player.transform.y = Math.round(
-    //     lerp(player.transform.position.y, target.y, dt)
-    //   );
-    //   Matter.Body.setPosition(player.transform, target);
-    // }
-
-  }
-  return world;
-};
 
 // Another system without any component attatched to world entity
 const timeSystem = (world) => {
@@ -128,9 +51,6 @@ const timeSystem = (world) => {
   return world;
 };
 
-// Order to execute systems
-const pipeline = pipe(movementSystem, timeSystem);
-
 // World entity that will handle all our entities attatched to world
 const world = createWorld();
 // Attach time object to world
@@ -144,43 +64,18 @@ world.time = {
   lastDeltaTime: 0
 };
 
-// Create a new entity and add components
-const eid = addEntity(world);
-addComponent(world, Position, eid);
-addComponent(world, Velocity, eid);
-Velocity.x[eid] = 1;
-Velocity.y[eid] = 1;
-
 const engine = Matter.Engine.create();
 
-  const entitiesSystem = createEntitiesSystem()
-  const playerTransformSystem = createPlayerTransformSystem(engine)
-  const playerTargetMovementSystem =  createPlayerTargetMovementSystem(engine)
-  const destroyEntitiesSystem = createDestroyEntitiesSystem()
-  const broadcastNetworkSystem = createBroadcastNetworkSystem()
-// execute the systems for world entity
-// setInterval(() => {
-//   pipeline(world);
-//   console.log(
-//     'running',
-//     eid,
-//     Velocity.x[eid],
-//     Position.x[eid],
-//     // world.time.delta,
-//     // world.time.elapsed,
-//     // world.time.then,
-//     // world.time.fps,
-//     // world.time.lastDeltaTime,
-//     world.time.deltaTime,
-//     world.time.deltaTimeCorrection
-//   );
-// }, frameRate);
-
-
+const entitiesSystem = createEntitiesSystem();
+const resourceSystem = createResourceSystem(engine);
+const playerTransformSystem = createPlayerTransformSystem(engine);
+const playerTargetMovementSystem = createPlayerTargetMovementSystem(engine);
+const destroyEntitiesSystem = createDestroyEntitiesSystem();
+const broadcastNetworkSystem = createBroadcastNetworkSystem();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer)
+const io = new Server(httpServer);
 
 app.use(express.static('acropolis/dist'));
 dotenv.config();
@@ -230,119 +125,118 @@ const entities = {
   ]
 };
 
-
-
-
-
-// console.log('networkEntities');
-
 engine.gravity.y = 0;
 engine.gravity.x = 0;
 Matter.Composite.add(engine.world, Object.values(entities).flat());
-
-const toVertices = (e) => e.vertices.map(({ x, y }) => ({ x, y }));
-const player = entities.player;
 
 let lastUpdate = Date.now();
 let lastDelta = Date.now();
 let dt;
 
-function getDistance(Vector1, Vector2) {
-  return Math.sqrt(
-    Math.pow(Vector1.x - Vector2.x, 2) + Math.pow(Vector1.y - Vector2.y, 2)
-  );
-}
+const resourcesFactory = (resourceCategory, x, y) => {
+  const entityId = uuid();
+  const position = {
+    x,
+    y
+  };
+  const entity = {
+    id: entityId,
+    position,
+    type:'resource',
+    transform: Matter.Bodies.circle(position.x, position.y, 16, {
+      isStatic: true
+    }),
+    sensor: Matter.Bodies.circle(position.x, position.y, 32, {
+      isStatic: true,
+      isSensor: true
+    })
+  };
+  switch (resourceCategory) {
+    case 'tree':
+      entity.category = 'tree';
+      break;
+    case 'stone':
+      entity.category = 'stone';
+      break;
+    case 'metal':
+      entity.category = 'metal';
+      break;
+    case 'herb':
+      entity.category = 'herb';
+      break;
+    case 'leather':
+      entity.category = 'leather';
+      break;
+    case 'fish':
+      entity.category = 'fish';
+      break;
+    case 'sand':
+      entity.category = 'sand';
+      break;
 
-function lerp(start, end, amt) {
-  return (1 - amt) * start + amt * end;
-}
+    default:
+      break;
+  }
+  return entity;
+};
 
+const tree = resourcesFactory('tree', 50, 50)
+const tree1 = resourcesFactory('tree', 150, 550)
+const tree2 = resourcesFactory('tree', 250, 250)
+const tree3 = resourcesFactory('tree', 350, 250)
+global.networkEntities[tree.id] = tree
+global.networkEntities[tree1.id] = tree1
+global.networkEntities[tree2.id] = tree2
+global.networkEntities[tree3.id] = tree3
+
+console.log(global.networkEntities)
+// TODO Integrate tymesystem in the server...
 setInterval(() => {
   let now = Date.now();
   dt = (now - lastUpdate) / frameRate;
-  global.dt = dt
+  global.dt = dt;
   // console.log('correction', dt / lastDelta)
   let correction = dt / lastDelta;
-  global.corretion = correction
+  global.corretion = correction;
   lastDelta = dt;
   //console.log('dt',dt, now, lastUpdate)
   //console.log('fps',1000/(now - lastUpdate))
   let fps = 1000 / (now - lastUpdate);
   // console.log(now - lastUpdate, dt, frameRate, fps)
   lastUpdate = now;
-  entitiesSystem(world)
-  playerTransformSystem(world)
-  playerTargetMovementSystem(world)
-  destroyEntitiesSystem()
-  broadcastNetworkSystem(world)
+  entitiesSystem(world);
+  resourceSystem(world)
+  playerTransformSystem(world);
+  playerTargetMovementSystem(world);
+  destroyEntitiesSystem();
+  broadcastNetworkSystem(world);
 
   Matter.Engine.update(engine, dt, correction);
-  // io.emit('update state', {
-  //   //boxes: entities.boxes.map(toVertices),
-  //   walls: entities.walls.map(toVertices),
-  //   // players: entities.players.map(player=> ({ position: player.transform.position,id:player.id, target: player.mousePosition})),
-  //   players: entities.players.map((player) => ({
-  //     position: player.transform.position,
-  //     id: player.id,
-  //     target: player.mousePosition,
-  //     skills: player.skills?.qSkill?.transform?.position
-  //       ? player.skills?.qSkill?.transform?.position
-  //       : null
-  //   })),
-  //   online,
-  //   fps
-  // });
-
   io.emit('broadcastNetworkClient', global.broadcastNetworkClient);
-
-  // entities.players.forEach((player) => {
-  //   if (entities.players[player.id]?.skills?.qSkill?.transform) {
-  //     // console.log(entities.players[player.id].skills.qSkill.transform);
-  //   }
-
-  //   let force = 1 * dt;
-  //   const deltaVector = Matter.Vector.sub(
-  //     player.transform.position,
-  //     player.mousePosition
-  //   );
-  //   const normalizedDelta = Matter.Vector.normalise(deltaVector);
-  //   let forceVector = Matter.Vector.mult(normalizedDelta, force);
-  //   const target = Matter.Vector.sub(player.transform.position, forceVector);
-  //   if (getDistance(player.mousePosition, player.transform.position) > 1) {
-  //     // console.log('lala',Math.round(lerp( player.transform.position.x,target.x, dt)), player.transform.position.x,target.x, dt )
-  //     player.transform.x = Math.round(
-  //       lerp(player.transform.position.x, target.x, dt)
-  //     );
-  //     player.transform.y = Math.round(
-  //       lerp(player.transform.position.y, target.y, dt)
-  //     );
-  //     Matter.Body.setPosition(player.transform, target);
-  //   }
-  // });
 }, frameRate);
 
 //Each connection will manage his own data
 io.on('connection', (socket) => {
-  const entityId = uuid()
+  const entityId = uuid();
   const newEntity = {
-    id: entityId, 
+    id: entityId,
     type: 'player',
-    position: {x:0,y:0},
-    target: {x:500, y:500}
-  }
-  global.networkEntities[entityId] = newEntity
+    position: { x: 0, y: 0 },
+    target: { x: 500, y: 500 }
+  };
+  global.networkEntities[entityId] = newEntity;
   // entities.players.push(newPlayer);
   socket.on('disconnect', () => {
-    global.networkEntities[entityId].destroyed = true
-    console.log('disconnected', entityId)
+    global.networkEntities[entityId].destroyed = true;
+    console.log('disconnected', entityId);
   });
   socket.on('player click', (coordinates) => {
-    global.networkEntities[entityId].target = coordinates 
+    global.networkEntities[entityId].target = coordinates;
     // newPlayer.mousePosition = coordinates;
   });
 
   socket.on('login', async (authToken) => {
-    socket.emit('loggedIn', {isLoggedIn: true, entityId});
+    socket.emit('loggedIn', { isLoggedIn: true, entityId });
     // try {
     //   const token = authToken;
     //   const { address, body } = await Web3Token.verify(token);
@@ -379,8 +273,9 @@ io.on('connection', (socket) => {
     //   console.log(error);
     // }
   });
-  socket.on('player q', () => {
-
+  socket.on('playerAction', (action) => {
+    console.log('action', action, entityId);
+    global.networkEntities[entityId].action = action;
   });
 });
 

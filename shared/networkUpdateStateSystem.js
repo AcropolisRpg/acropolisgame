@@ -44,6 +44,12 @@ export const networkUpdateStateSystem = (socket) => {
     return localEntity
   }
 
+  const getLocalEntityByNetworkId = (id) => {
+
+    const localEntity =  localEntities[getLocalEntityIDbyNetworkID(id)]
+    return localEntity
+  }
+
 
   const getNetworkEntities = () => {
     return networkEntities;
@@ -80,6 +86,7 @@ export const networkUpdateStateSystem = (socket) => {
     // Local values can be written
     getLocalEntities,
     getLocalEntityByLocalId,
+    getLocalEntityByNetworkId,
     setLocalEntityByLocalId,
 
     // The glue between server and client.

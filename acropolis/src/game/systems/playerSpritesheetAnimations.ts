@@ -15,7 +15,7 @@ const animatedPlayer = (scene) => {
     frames: scene.anims.generateFrameNumbers('bodySpriteSheet', {
       frames: [128]
     }),
-    frameRate: 15,
+    frameRate: 7,
     repeat: -1
   };
   scene.anims.create(idle);
@@ -25,8 +25,8 @@ const animatedPlayer = (scene) => {
       start: 1152,
       end: 1155
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(attack);
   const mining = {
@@ -35,8 +35,8 @@ const animatedPlayer = (scene) => {
       start: 8*8*31,
       end:  8*8*31+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(mining);
   const gathering = {
@@ -45,8 +45,8 @@ const animatedPlayer = (scene) => {
       start: 8*8*10,
       end:  8*8*10+2
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(gathering);
   const chopping = {
@@ -55,8 +55,8 @@ const animatedPlayer = (scene) => {
       start: 8*8*35,
       end:  8*8*35+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(chopping);
   const fishing = {
@@ -65,7 +65,7 @@ const animatedPlayer = (scene) => {
       start: 8*8*47,
       end:  8*8*47+4
     }),
-    frameRate: 15,
+    frameRate: 7,
     repeat: 0
   };
   scene.anims.create(fishing);
@@ -75,8 +75,8 @@ const animatedPlayer = (scene) => {
       start: 8*8*39,
       end:  8*8*39+1
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 3,
+    repeat: -1
   };
   scene.anims.create(watering);
   const shoveling = {
@@ -85,8 +85,8 @@ const animatedPlayer = (scene) => {
       start: 8*8*43,
       end:  8*8*43+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(shoveling);
   // Shoes
@@ -105,7 +105,7 @@ const animatedPlayer = (scene) => {
     frames: scene.anims.generateFrameNumbers('shoesSpriteSheet', {
       frames: [160]
     }),
-    frameRate: 15,
+    frameRate: 7,
     repeat: -1
   };
   scene.anims.create(idleShoes);
@@ -115,8 +115,8 @@ const animatedPlayer = (scene) => {
       start: 1440,
       end: 1443
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(attackShoes);
   const miningShoes = {
@@ -125,8 +125,8 @@ const animatedPlayer = (scene) => {
       start: 2480,
       end: 2483
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(miningShoes);
   const gatheringShoes = {
@@ -135,8 +135,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*10,
       end:  8*10*10+2
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(gatheringShoes);
   const choppingShoes = {
@@ -145,8 +145,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*35,
       end:  8*10*35+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(choppingShoes);
   const fishingShoes = {
@@ -155,7 +155,7 @@ const animatedPlayer = (scene) => {
       start: 8*10*47,
       end:  8*10*47+4
     }),
-    frameRate: 15,
+    frameRate: 7,
     repeat: 0
   };
   scene.anims.create(fishingShoes);
@@ -165,8 +165,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*39,
       end:  8*10*39
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 3,
+    repeat: -1
   };
   scene.anims.create(wateringShoes);
   const shovelingShoes = {
@@ -175,8 +175,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*43,
       end:  8*10*43+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(shovelingShoes);
   // Clothes
@@ -196,7 +196,7 @@ const animatedPlayer = (scene) => {
     frames: scene.anims.generateFrameNumbers('clothesSpriteSheet', {
       frames: [160]
     }),
-    frameRate: 15,
+    frameRate: 7,
     repeat: -1
   };
   scene.anims.create(idleClothes);
@@ -206,8 +206,8 @@ const animatedPlayer = (scene) => {
       start: 1440,
       end: 1443
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(attackClothes);
   const miningClothes = {
@@ -216,8 +216,8 @@ const animatedPlayer = (scene) => {
       start: 2480,
       end: 2483
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(miningClothes);
   const gatheringClothes = {
@@ -226,8 +226,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*10,
       end: 8*10*10+2
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(gatheringClothes);
   const choppingClothes = {
@@ -236,8 +236,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*35,
       end: 8*10*35+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(choppingClothes);
   const fishingClothes = {
@@ -246,7 +246,7 @@ const animatedPlayer = (scene) => {
       start: 8*10*47,
       end: 8*10*47+4
     }),
-    frameRate: 15,
+    frameRate: 7,
     repeat: 0
   };
   scene.anims.create(fishingClothes);
@@ -256,8 +256,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*39,
       end: 8*10*39+1
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 3,
+    repeat: -1
   };
   scene.anims.create(wateringClothes);
   const shovelingClothes = {
@@ -266,8 +266,8 @@ const animatedPlayer = (scene) => {
       start: 8*10*43,
       end: 8*10*43+4
     }),
-    frameRate: 15,
-    repeat: 0
+    frameRate: 7,
+    repeat: -1
   };
   scene.anims.create(shovelingClothes);
 }

@@ -5,19 +5,20 @@ import {
 
 export const createTimeSystem = () =>{
   window.acropolis.timeSystem = {}
+  const timeSystem = window.acropolis.timeSystem
   // window.acropolis.timeSystem.frameRate = 1000/60
-  window.acropolis.timeSystem.frameRate = 1000/60
-  window.acropolis.timeSystem.clientDeltaTime = 1;
-  window.acropolis.timeSystem.clientLastUpdate = Date.now();
-  window.acropolis.timeSystem.clientLastDeltaTime = 1;
+  timeSystem.frameRate = 1000/60
+  timeSystem.clientDeltaTime = 1;
+  timeSystem.clientLastUpdate = Date.now();
+  timeSystem.clientLastDeltaTime = 1;
 
   return defineSystem(world => {
 
     const clientNow = Date.now();
-    window.acropolis.timeSystem.clientDeltaTime = (clientNow - window.acropolis.timeSystem.clientLastUpdate) / window.acropolis.timeSystem.frameRate;
-    window.acropolis.timeSystem.clientLastUpdate = clientNow;
-    window.acropolis.timeSystem.correction = window.acropolis.timeSystem.clientDeltaTime / window.acropolis.timeSystem.clientLastDeltaTime;
-    window.acropolis.timeSystem.clientLastDeltaTime = window.acropolis.timeSystem.clientDeltaTime;
+    timeSystem.clientDeltaTime = (clientNow - timeSystem.clientLastUpdate) / timeSystem.frameRate;
+    timeSystem.clientLastUpdate = clientNow;
+    timeSystem.correction = timeSystem.clientDeltaTime / timeSystem.clientLastDeltaTime;
+    timeSystem.clientLastDeltaTime = timeSystem.clientDeltaTime;
     return world
   })
 } 

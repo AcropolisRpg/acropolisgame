@@ -1,9 +1,8 @@
-import { Position, TargetPosition } from './../components/position';
+import { Position, TargetPosition } from './../components/components';
 import { defineQuery, defineSystem } from 'bitecs';
 import { getDistance, lerp } from '../utils/transformManager';
 import cooldownTimer from '../utils/cooldownTimer';
-import { flipPlayerX, flipPlayerY } from './flipPlayer';
-import playerPlayAnimation from './playerPlayAnimations';
+import { flipPlayerX } from './flipPlayer';
 
 export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
   const movementQuery = defineQuery([TargetPosition, Position]);
@@ -29,18 +28,20 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
       if (!localEntity?.sprites?.body) {
         continue;
       }
+
+      // !TODO move to animation system
       const distance = getDistance(localEntity.sprites.body, entity.target);
       if (
-        localEntity?.sprites?.body?.anims?.currentAnim?.key !== 'running' &&
+        localEntity.action !== 'running' &&
         distance > 1
       ) {
-        playerPlayAnimation(scene, 'running', localEntity);
+        localEntity.action = 'running'
       }
       if (
-        localEntity?.sprites?.body?.anims?.currentAnim?.key !== 'idle' &&
+        localEntity.action !== 'idle' &&
         distance < 1
       ) {
-        playerPlayAnimation(scene, 'idle', localEntity);
+        localEntity.action = 'idle'
       }
       if (localEntity.sprites.body.x < entity.target.x) {
         flipPlayerX(localEntity.sprites);
@@ -62,27 +63,6 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
           y: Math.round(activePointer.worldY)
         });
       }
-
-      // if (activePointer.leftButtonReleased()) {
-      //   if (
-      //     localEntity.target &&
-      //     localEntity.sprite &&
-      //     localEntity.sprite?.anims?.currentAnim?.key !== 'running'
-      //   ) {
-      //     playerPlayAnimation(this, 'running', localEntity);
-      //     if (localEntity.sprite.x < activePointer.worldX) {
-      //       flipPlayerX(localEntity.sprites);
-      //     } else {
-      //       flipPlayerX(localEntity.sprites, true);
-      //     }
-      //   }
-      //   const target = {
-      //     x: Math.round(activePointer.worldX),
-      //     y: Math.round(activePointer.worldY)
-      //   };
-      //   localEntity.target = target;
-      //   socket.emit('player click', target);
-      // }
     }
     return world;
   });

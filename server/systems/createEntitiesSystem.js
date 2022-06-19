@@ -13,7 +13,8 @@ import {
   Position,
   TargetPosition,
   TransformRectangle,
-  Player
+  Player,
+  Resource
 } from '../components/components.js';
 
 export const createEntitiesSystem = () => {
@@ -40,6 +41,15 @@ export const createEntitiesSystem = () => {
         addComponent(world, Actions, entityId);
         addComponent(world, TransformRectangle, entityId);
         addComponent(world, Player, entityId);
+      }
+
+      if (networkEntity.type === 'resource') {
+        const entityId = addEntity(world);
+        entitiesByNetworkId[networkEntityId] = entityId;
+        entitiesByLocalId[entityId] = networkEntityId;
+        addComponent(world, Position, entityId);
+        addComponent(world, TransformRectangle, entityId);
+        addComponent(world, Resource, entityId);
       }
     }
     for (const [eid, entity] of Object.entries(global.networkEntities)) {

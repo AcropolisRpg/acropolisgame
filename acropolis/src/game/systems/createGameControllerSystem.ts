@@ -1,48 +1,76 @@
-import playerPlayAnimation from './playerPlayAnimations';
+import { defineSystem } from 'bitecs';
+import cooldownTimer from '../utils/cooldownTimer';
 
-const createGameControllerSystem =  (scene: Phaser.Scene, player, socket) => {
-  const currentPlayer = player
-  scene.input.keyboard.on('keydown', (e) => {
-    if (player.action) {
-      return;
+const createGameControllerSystem = (scene: Phaser.Scene, socket) => {
+  // const currentPlayer = player;
+  const inputKeys = 'Q,W,E,R,A,S,D,F';
+  const keys: any = scene.input.keyboard.addKeys(inputKeys);
+  const inputKeysList = inputKeys.split(',');
+  const cooldownTime = cooldownTimer(251);
+  return defineSystem((world) => {
+    const currentPlayer =
+      window.acropolis.networkSystem.getLocalEntityByNetworkId(
+        window.acropolis.currentPlayerId
+      );
+    // TODO Move to network System?
+    for (let i = 0; i < inputKeysList.length; i++) {
+      const key = inputKeysList[i];
+      if (keys[key].isDown) {
+        switch (key) {
+          case 'Q':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'skill');
+            }
+            currentPlayer.action = 'skill';
+            break;
+          case 'W':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'attack');
+            }
+            currentPlayer.action = 'attack';
+            break;
+          case 'E':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'mining');
+            }
+            currentPlayer.action = 'mining';
+            break;
+          case 'R':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'gathering');
+            }
+            currentPlayer.action = 'gathering';
+            break;
+          case 'A':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'chopping');
+            }
+            currentPlayer.action = 'chopping';
+            break;
+          case 'S':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'fishing');
+            }
+            currentPlayer.action = 'fishing';
+            break;
+          case 'D':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'watering');
+            }
+            currentPlayer.action = 'watering';
+            break;
+          case 'F':
+            if (cooldownTime.remainigTime() >= 250) {
+              socket.emit('playerAction', 'shoveling');
+            }
+            currentPlayer.action = 'shoveling';
+            break;
+          default:
+            break;
+        }
+      }
     }
-    player.action = true;
-    switch (e.code) {
-      case 'KeyQ':
-        socket.emit('playerAction', 'skill');
-        break;
-      case 'KeyW':
-        socket.emit('playerAction', 'attack');
-        playerPlayAnimation(scene, 'attack', currentPlayer);
-        break;
-      case 'KeyE':
-        socket.emit('playerAction', 'mining');
-        playerPlayAnimation(scene, 'mining', currentPlayer);
-        break;
-      case 'KeyR':
-        socket.emit('playerAction', 'gathering');
-        playerPlayAnimation(scene, 'gathering', currentPlayer);
-        break;
-      case 'KeyA':
-        socket.emit('playerAction', 'chopping');
-        playerPlayAnimation(scene, 'chopping', currentPlayer);
-        break;
-      case 'KeyS':
-        socket.emit('playerAction', 'fishing');
-        playerPlayAnimation(scene, 'fishing', currentPlayer);
-        break;
-      case 'KeyD':
-        socket.emit('playerAction', 'watering');
-        playerPlayAnimation(scene, 'watering', currentPlayer);
-        break;
-      case 'KeyF':
-        socket.emit('playerAction', 'shoveling');
-        playerPlayAnimation(scene, 'shoveling', currentPlayer);
-        break;
-      default:
-        break;
-    }
-    setTimeout(() => (player.action = false), 500);
+    return world;
   });
 };
 export default createGameControllerSystem;
