@@ -34,8 +34,8 @@ export const createResourceSystem = (engine) => {
       }
       Matter.World.remove(engine.world, resource);
       Matter.World.remove(engine.world, sensor);
-      global.networkEntities[global.entitiesByLocalId[id]].transform = {}
-      global.networkEntities[global.entitiesByLocalId[id]].sensor = {}
+      global.networkEntities[global.entitiesByLocalId[id]].transform = null
+      global.networkEntities[global.entitiesByLocalId[id]].sensor = null
     }
     return world;
   });

@@ -14,18 +14,25 @@ export const createResourceSpriteSystem = (scene: Phaser.Scene) => {
     for (let i = 0; i < enterEntities.length; i++) {
       const id = enterEntities[i];
       const entity = getLocalEntityByLocalId(id);
-      console.log('entity', entity)
+      // console.log('entity', entity)
       entity.sprites = {};
       if (entity.category === 'tree') {
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y -15, 'trees');
+        entity.sprites.body.setScale(2)
       }
 
       if (entity.category === 'herb') {
         console.log('pintalamadre')
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y - 5, 'globalNature');
         entity.sprites.body.setFrame(60)
+        entity.sprites.body.setScale(2)
       }
-      entity.sprites.body.setScale(2)
+      if (entity.category === 'stone') {
+        console.log('pintalamadre')
+        entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'TXprops');
+        entity.sprites.body.setFrame(245)
+      }
+
 
       // !Important To set multiple resources you can select a frame and change widh and height or without for default
       // if(id === 0) {

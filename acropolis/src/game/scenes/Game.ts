@@ -5,7 +5,7 @@ import {
   loadTilemapTiledJSON,
   loadSpritesheet
 } from '../phaserHelper/loaders';
-import { FRAME_SIZE_32_32, FRAME_SIZE_96_96, FRAME_SIZE_16_16 } from '../constants/constants';
+import { FRAME_SIZE_32_32, FRAME_SIZE_96_96, FRAME_SIZE_16_16, FRAME_SIZE_64_64 } from '../constants/constants';
 import animatedPlayer from '../systems/playerSpritesheetAnimations';
 import createGameControllerSystem from '../systems/createGameControllerSystem';
 import { createWorld } from 'bitecs';
@@ -16,6 +16,7 @@ import { createTargetMovementSystem } from './../systems/createTargetMovementSys
 import { createTimeSystem } from '../systems/createTimeSystem';
 import createAnimationSystem from '../systems/createAnimationSystem';
 import { createResourceSpriteSystem } from '../systems/createResourceSpriteSystem';
+import { createHealthBarSystem } from '../systems/createHealthBarSystem';
 
 declare global {
   interface Window {
@@ -32,6 +33,7 @@ export default class Game extends Phaser.Scene {
   private gameControllerSystem;
   private animationSystem;
   private resourceSpriteSystem;
+  private healthBarSystem;
 
   init(data) {
     this.lobbyScene = {};
@@ -79,6 +81,30 @@ export default class Game extends Phaser.Scene {
       '/game/nature/global.png',
       FRAME_SIZE_16_16
     );
+    loadSpritesheet(
+      this,
+      'TXprops',
+      '/game/rpg-pack/Texture/TXProps.png',
+      FRAME_SIZE_32_32
+    );
+    loadSpritesheet(
+      this,
+      'healthBarDecoration',
+      '/game/statusbar/health_bar_decoration.png',
+      {
+        frameWidth: 64,
+        frameHeight: 17
+      }
+    );
+    loadSpritesheet(
+      this,
+      'healthBar',
+      '/game/statusbar/health_bar.png',
+      {
+        frameWidth: 49,
+        frameHeight: 17
+      }
+    );
   }
   create() {
     this.world = createWorld();
@@ -93,6 +119,7 @@ export default class Game extends Phaser.Scene {
       'clothesSpriteSheet',
       'shoesSpriteSheet'
     ]);
+    this.healthBarSystem = createHealthBarSystem(this)
     this.animationSystem = createAnimationSystem(this);
     this.targetMovementSystem = createTargetMovementSystem(
       this,
@@ -134,6 +161,7 @@ export default class Game extends Phaser.Scene {
       this.timeSystem(this.world);
       this.entitySystem(this.world);
       this.spriteSystem(this.world);
+      this.healthBarSystem(this.world)
       this.resourceSpriteSystem(this.world)
       this.targetMovementSystem(this.world);
       this.gameControllerSystem(this.world);

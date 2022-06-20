@@ -48,6 +48,7 @@ export const createPlayerTargetMovementSystem = () => {
       let forceVector = Matter.Vector.mult(normalizedDelta, force)
       const target = Matter.Vector.sub(playerPosition, forceVector)
       if (getDistance(networkEntity.target, playerPosition) > 1) {
+        networkEntity.action = 'running'
         // playerPosition.x = Math.round(
         //   lerp(playerPosition.x, target.x, dt)
         // );
@@ -64,6 +65,10 @@ export const createPlayerTargetMovementSystem = () => {
         // console.log(networkEntity)
         networkEntity.position.x = global.networkEntities[global.entitiesByLocalId[id]].transform.position.x
         networkEntity.position.y = global.networkEntities[global.entitiesByLocalId[id]].transform.position.y
+      }
+
+      if (getDistance(networkEntity.target, playerPosition) < 1 && networkEntity.action === 'running') {
+        networkEntity.action = 'idle'
       }
     }
     return world;

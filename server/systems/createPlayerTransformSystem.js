@@ -41,7 +41,7 @@ export const createPlayerTransformSystem = (engine) => {
         continue;
       }
       Matter.World.remove(engine.world, player);
-      global.networkEntities[global.entitiesByLocalId[id]].transform = {}
+      global.networkEntities[global.entitiesByLocalId[id]].transform = null
     }
     return world;
   });

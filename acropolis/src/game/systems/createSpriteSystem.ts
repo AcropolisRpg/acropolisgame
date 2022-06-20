@@ -27,7 +27,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
           timeSystem.clientDeltaTime * timeSystem.correction,
           timeSystem.clientDeltaTime * timeSystem.correction
         );
-        scene.cameras.main.zoom = 2;
+        scene.cameras.main.zoom = 1;
         scene.cameras.main.roundPixels = true;
       }
     }
@@ -46,6 +46,8 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       clothes.y = Position.y[id];
       shoes.x = Position.x[id];
       shoes.y = Position.y[id];
+      entity.position.x  = Position.x[id];
+      entity.position.y  = Position.y[id];
     }
 
     const exitEntities = spriteQueryExit(world);

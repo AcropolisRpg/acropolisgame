@@ -58,7 +58,7 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
         } else {
           flipPlayerX(localEntity.sprites, true);
         }
-        socket.emit('player click', {
+        socket.emit('playerTarget', {
           x: Math.round(activePointer.worldX),
           y: Math.round(activePointer.worldY)
         });
