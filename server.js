@@ -28,8 +28,10 @@ global.entitiesByNetworkId = {};
 global.entitiesByLocalId = {};
 global.broadcastNetworkClient = {};
 
+
 // this will track entities commands from clients while they are existing.
 global.networkEntities = {};
+
 
 // This will track the local data for example matterJS objects
 global.localEntities = {};
@@ -462,6 +464,7 @@ io.on('connection', (socket) => {
         console.log('disconnected', entityId);
       });
       socket.on('playerTarget', (coordinates) => {
+        console.log('coordinates', coordinates)
         global.networkEntities[entityId].target = coordinates;
         // newPlayer.mousePosition = coordinates;
       });

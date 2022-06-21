@@ -10,6 +10,9 @@ import { getDistance, lerp } from '../utils/utils.js';
 export const createPlayerTargetMovementSystem = () => {
   const moveEntityQuery = defineQuery([TransformRectangle, TargetPosition, Position])
   const moveEntityQueryEnter = enterQuery(moveEntityQuery)
+
+  // TODO Agregar la entidad a la lista de modificados 
+  // TODO y leer esa lista al final del network y enviarla a todos los clientes.
   return defineSystem((world) => {
   
     const enterEntities = moveEntityQueryEnter(world);
@@ -33,10 +36,11 @@ export const createPlayerTargetMovementSystem = () => {
       if (!networkEntity.target) {
         continue;
       }
+      const playerPosition = global.networkEntities[global.entitiesByLocalId[id]].transform.position
+      if (getDistance(networkEntity.target, playerPosition) > 1) {
       const dt = global.dt
       let force = 1 * dt
 
-      const playerPosition = global.networkEntities[global.entitiesByLocalId[id]].transform.position
       const deltaVector = Matter.Vector.sub(
         playerPosition,
         networkEntity.target
@@ -47,7 +51,6 @@ export const createPlayerTargetMovementSystem = () => {
       const normalizedDelta = Matter.Vector.normalise(deltaVector)
       let forceVector = Matter.Vector.mult(normalizedDelta, force)
       const target = Matter.Vector.sub(playerPosition, forceVector)
-      if (getDistance(networkEntity.target, playerPosition) > 1) {
         networkEntity.action = 'running'
         // playerPosition.x = Math.round(
         //   lerp(playerPosition.x, target.x, dt)

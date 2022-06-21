@@ -40,7 +40,7 @@ export const createPlayerTransformSystem = (engine) => {
       if (!player) {
         continue;
       }
-      Matter.World.remove(engine.world, player);
+      Matter.World.remove(engine.world, player)
       global.networkEntities[global.entitiesByLocalId[id]].transform = null
     }
     return world;
