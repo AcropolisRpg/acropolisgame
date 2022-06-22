@@ -1,15 +1,19 @@
 import { Position, TargetPosition } from './../components/components';
 import { defineQuery, defineSystem } from 'bitecs';
 import { getDistance, lerp } from '../utils/transformManager';
-import cooldownTimer from '../utils/cooldownTimer';
 import { flipPlayerX } from './flipPlayer';
+import { cooldownTimer } from '../utils/cooldownTimer';
 
 export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
   const movementQuery = defineQuery([TargetPosition, Position]);
   const activePointer = scene.input.activePointer;
   const cooldownTime = cooldownTimer(100);
+  // console.log('madres', window.acropolis.timeSystem.clientDeltaTimeNoFR)
   // let animation = null;
   return defineSystem((world) => {
+  cooldownTime.timeCounter(window.acropolis.timeSystem.clientDeltaTimeNoFR)
+  // console.log('targetMovement', cooldownTime.timer.currentTime)
+  // console.log('targetMovement', cooldownTime.timer.isReady)
     const clientDeltaTime = window.acropolis.timeSystem.clientDeltaTime;
     const entities = movementQuery(world);
     for (let i = 0; i < entities.length; i++) {
@@ -51,8 +55,9 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
       if (
         activePointer.leftButtonDown() &&
         !activePointer.leftButtonReleased() &&
-        cooldownTime.remainigTime() >= 100
+        cooldownTime.timer.isReady
       ) {
+        cooldownTime.trigger()
         if (localEntity.sprites.body.x < activePointer.worldX) {
           flipPlayerX(localEntity.sprites);
         } else {

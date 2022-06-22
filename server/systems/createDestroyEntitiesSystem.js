@@ -1,11 +1,11 @@
 import {
   defineSystem
-} from 'bitecs';
+} from 'bitecs'
 
 export const createDestroyEntitiesSystem = () => {
-  const entitiesByNetworkId = global.entitiesByNetworkId;
-  const entitiesByLocalId = global.entitiesByLocalId;
-  const networkEntities = global.networkEntities 
+  const entitiesByNetworkId = global.entitiesByNetworkId
+  const entitiesByLocalId = global.entitiesByLocalId
+  const networkEntities = global.networkEntities
   return defineSystem((world) => {
     for (const [eid, entity] of Object.entries(networkEntities)) {
       if (entity.destroyed) {
@@ -15,6 +15,6 @@ export const createDestroyEntitiesSystem = () => {
         delete networkEntities[eid]
       }
     }
-    return world;
-  });
-};
+    return world
+  })
+}

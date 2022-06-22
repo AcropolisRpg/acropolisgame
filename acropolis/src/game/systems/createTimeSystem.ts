@@ -11,10 +11,11 @@ export const createTimeSystem = () =>{
   timeSystem.clientDeltaTime = 1;
   timeSystem.clientLastUpdate = Date.now();
   timeSystem.clientLastDeltaTime = 1;
-
+  timeSystem.clientDeltaTimeNoFR = 0
   return defineSystem(world => {
 
     const clientNow = Date.now();
+    timeSystem.clientDeltaTimeNoFR = (clientNow - timeSystem.clientLastUpdate)
     timeSystem.clientDeltaTime = (clientNow - timeSystem.clientLastUpdate) / timeSystem.frameRate;
     timeSystem.clientLastUpdate = clientNow;
     timeSystem.correction = timeSystem.clientDeltaTime / timeSystem.clientLastDeltaTime;

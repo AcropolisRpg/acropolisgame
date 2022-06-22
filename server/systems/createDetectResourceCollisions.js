@@ -1,26 +1,31 @@
-import { defineSystem } from 'bitecs';
-import Matter from 'matter-js';
+import { defineSystem } from 'bitecs'
+import Matter from 'matter-js'
 
 // !Important imports not working withot JS extension WTF.
-import { cooldownTimer } from '../utils/utils.js';
+import { cooldownTimer } from '../utils/utils.js'
 
 export const createDetectResourceCollision = () => {
-  const networkEntities = global.networkEntities;
-  const timers = {};
+  const networkEntities = global.networkEntities
+  const timers = {}
   return defineSystem((world) => {
     for (const [, player] of Object.entries(networkEntities)) {
       if (player?.type && player.type !== 'player') {
-        continue;
+        continue
       }
+      if (!timers[player.id]) {
+        timers[player.id] = cooldownTimer(2000)
+      }
+      timers[player.id].timeCounter(global.deltaTime)
+      // console.log('timers[player.id].timer.currentTime', global.deltaTime, timers[player.id].timer.currentTime)
       for (const [, entityB] of Object.entries(networkEntities)) {
         if (player.id === entityB.id) {
-          continue;
+          continue
         }
         if (!entityB?.sensor) {
-          continue;
+          continue
         }
         if (!player?.transform) {
-          continue;
+          continue
         }
         // console.log('antes de tronar', player.transform, entityB.sensor)
         if (
@@ -34,71 +39,62 @@ export const createDetectResourceCollision = () => {
           switch (player.action) {
             case 'mining':
               if (entityB.category === 'stone') {
-                if (!timers[player.id]) {
-                  timers[player.id] = cooldownTimer(2000);
-                }
-                timers[player.id].timeCounter(global.deltaTime);
-                if (timers[player.id].timer.currentTime <= 0) {
-                  if(!player.items) {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
                     player.items = {}
                   }
-                  if(!player.items['basicStone']) {
+                  if (!player.items.basicStone) {
                     player.items.basicStone = 1
                   }
-                  if (player.items['basicStone']) {
+                  if (player.items.basicStone) {
                     player.items.basicStone = player.items.basicStone + 1
                   }
-                  console.log('player Items',player.items)
+                  console.log('player Items', player.items)
                 }
               }
-              break;
+              break
             case 'gathering':
               if (entityB.category === 'herb') {
-                if (!timers[player.id]) {
-                  timers[player.id] = cooldownTimer(2000);
-                }
-                timers[player.id].timeCounter(global.deltaTime);
-                if (timers[player.id].timer.currentTime <= 0) {
-                  if(!player.items) {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
                     player.items = {}
                   }
-                  if(!player.items['basicHerb']) {
+                  if (!player.items.basicHerb) {
                     player.items.basicHerb = 1
                   }
-                  if (player.items['basicHerb']) {
+                  if (player.items.basicHerb) {
                     player.items.basicHerb = player.items.basicHerb + 1
                   }
-                  console.log('player Items',player.items)
+                  console.log('player Items', player.items)
                 }
               }
-              break;
+              break
             case 'chopping':
               if (entityB.category === 'tree') {
-                if (!timers[player.id]) {
-                  timers[player.id] = cooldownTimer(2000);
-                }
-                timers[player.id].timeCounter(global.deltaTime);
-                if (timers[player.id].timer.currentTime <= 0) {
-                  if(!player.items) {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
                     player.items = {}
                   }
-                  if(!player.items['basicWood']) {
+                  if (!player.items.basicWood) {
                     player.items.basicWood = 1
                   }
-                  if (player.items['basicWood']) {
+                  if (player.items.basicWood) {
                     player.items.basicWood = player.items.basicWood + 1
                   }
-                  console.log('player Items',player.items)
+                  console.log('player Items', player.items)
                 }
               }
-              break;
+              break
             default:
-              break;
+              break
           }
         }
       }
     }
     // console.log(timers);
-    return world;
-  });
-};
+    return world
+  })
+}

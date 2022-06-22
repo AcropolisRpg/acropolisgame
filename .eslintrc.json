@@ -1,12 +1,16 @@
 {
-  "parserOptions": {
-       "ecmaVersion": 6,
-       "sourceType": "module",
-       "ecmaFeatures": {
-           "jsx": true
-       }
-  },
-  "rules": {
-      "semi": "error"
-  }
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+    }
 }

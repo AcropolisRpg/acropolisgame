@@ -1,6 +1,6 @@
 import { defineQuery, defineSystem, enterQuery, exitQuery } from 'bitecs';
 import { Body, Position} from '../components/components';
-
+import Phaser from 'phaser';
 export const createHealthBarSystem = (scene: Phaser.Scene) => {
   // const spritesById = {}
   const spriteQuery = defineQuery([Body]);
@@ -18,6 +18,7 @@ export const createHealthBarSystem = (scene: Phaser.Scene) => {
       entity.sprites.healthBarDecoration.setScrollFactor(0, 0)
       entity.sprites.healthBar = scene.add.sprite(57, 15, 'healthBar');
       entity.sprites.healthBar.setScrollFactor(0, 0)
+      entity.sprites.healthBar.setCrop(0, 0, 40, 10);
     }
 
     const exitEntities = spriteQueryExit(world);

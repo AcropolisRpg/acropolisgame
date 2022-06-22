@@ -1,70 +1,69 @@
-import express from 'express';
-import Matter from 'matter-js';
-import dotenv from 'dotenv';
-import Web3Token from 'web3-token';
-import axios from 'axios';
-import { v4 as uuid } from 'uuid';
-import { createWorld } from 'bitecs';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-import { createEntitiesSystem } from './server/systems/createEntitiesSystem.js';
-import { createPlayerTransformSystem } from './server/systems/createPlayerTransformSystem.js';
-import { createPlayerTargetMovementSystem } from './server/systems/createPlayerTargetMovementSystem.js';
-import { createBroadcastNetworkSystem } from './server/systems/createNetworkBroadcastSystem.js';
-import { createDestroyEntitiesSystem } from './server/systems/createDestroyEntitiesSystem.js';
-import { createResourceSystem } from './server/systems/createResourceSystem.js';
-import { createDetectResourceCollision } from './server/systems/createDetectResourceCollisions.js';
-import monk from 'monk';
+import express from 'express'
+import Matter from 'matter-js'
+import dotenv from 'dotenv'
+import Web3Token from 'web3-token'
+import axios from 'axios'
+import { v4 as uuid } from 'uuid'
+import { createWorld } from 'bitecs'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import { createEntitiesSystem } from './server/systems/createEntitiesSystem.js'
+import { createPlayerTransformSystem } from './server/systems/createPlayerTransformSystem.js'
+import { createPlayerTargetMovementSystem } from './server/systems/createPlayerTargetMovementSystem.js'
+import { createBroadcastNetworkSystem } from './server/systems/createNetworkBroadcastSystem.js'
+import { createDestroyEntitiesSystem } from './server/systems/createDestroyEntitiesSystem.js'
+import { createResourceSystem } from './server/systems/createResourceSystem.js'
+import { createDetectResourceCollision } from './server/systems/createDetectResourceCollisions.js'
+import monk from 'monk'
+import { cooldownTimer } from './server/utils/utils.js'
 
-const url = 'localhost:27017/game';
-const db = monk(url);
+const url = 'localhost:27017/game'
+const db = monk(url)
 db.then(() => {
-  console.log('Connected correctly to server');
-});
+  console.log('Connected correctly to server')
+})
 
-const playersDB = db.get('players');
+const playersDB = db.get('players')
 
-global.entitiesByNetworkId = {};
-global.entitiesByLocalId = {};
-global.broadcastNetworkClient = {};
-
+global.entitiesByNetworkId = {}
+global.entitiesByLocalId = {}
+global.broadcastNetworkClient = {}
 
 // this will track entities commands from clients while they are existing.
-global.networkEntities = {};
-
+global.networkEntities = {}
 
 // This will track the local data for example matterJS objects
-global.localEntities = {};
+global.localEntities = {}
 
-const frameRate = 1000 / 60;
+const frameRate = 1000 / 60
 
 // Another system without any component attatched to world entity
 const timeSystem = (world) => {
   // init
-  const { time } = world;
+  const { time } = world
   if (time.then === 0) {
-    time.then = performance.now();
+    time.then = performance.now()
   }
   if (time.deltaTime === 0) {
     // console.log('nioent');
-    time.deltaTime = performance.now();
+    time.deltaTime = performance.now()
   }
-  const now = performance.now();
-  const delta = now - time.then;
+  const now = performance.now()
+  const delta = now - time.then
 
-  time.delta = delta;
-  time.elapsed += delta;
-  time.fps = 1000 / (now - time.then);
-  time.lastDeltaTime = time.deltaTime;
-  time.deltaTime = delta / frameRate;
-  time.deltaTimeCorrection = time.deltaTime / time.lastDeltaTime;
-  time.then = now;
+  time.delta = delta
+  time.elapsed += delta
+  time.fps = 1000 / (now - time.then)
+  time.lastDeltaTime = time.deltaTime
+  time.deltaTime = delta / frameRate
+  time.deltaTimeCorrection = time.deltaTime / time.lastDeltaTime
+  time.then = now
 
-  return world;
-};
+  return world
+}
 
 // World entity that will handle all our entities attatched to world
-const world = createWorld();
+const world = createWorld()
 // Attach time object to world
 world.time = {
   delta: 0,
@@ -74,31 +73,31 @@ world.time = {
   deltaTimeCorrection: 0,
   fps: 1,
   lastDeltaTime: 0
-};
+}
 
-const engine = Matter.Engine.create();
+const engine = Matter.Engine.create()
 
-const entitiesSystem = createEntitiesSystem();
-const resourceSystem = createResourceSystem(engine);
-const playerTransformSystem = createPlayerTransformSystem(engine);
-const playerTargetMovementSystem = createPlayerTargetMovementSystem(engine);
-const detectResourceCollision = createDetectResourceCollision();
-const destroyEntitiesSystem = createDestroyEntitiesSystem();
-const broadcastNetworkSystem = createBroadcastNetworkSystem();
+const entitiesSystem = createEntitiesSystem()
+const resourceSystem = createResourceSystem(engine)
+const playerTransformSystem = createPlayerTransformSystem(engine)
+const playerTargetMovementSystem = createPlayerTargetMovementSystem(engine)
+const detectResourceCollision = createDetectResourceCollision()
+const destroyEntitiesSystem = createDestroyEntitiesSystem()
+const broadcastNetworkSystem = createBroadcastNetworkSystem()
 
-const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer);
+const app = express()
+const httpServer = createServer(app)
+const io = new Server(httpServer)
 
-app.use(express.static('acropolis/dist'));
-dotenv.config();
+app.use(express.static('acropolis/dist'))
+dotenv.config()
 
-const canvas = { width: 1000, height: 1000 };
-const boxes = 0;
-const playered = 0;
-const playerSize = 16;
-const wallThickness = 20;
-let online = 0;
+const canvas = { width: 1000, height: 1000 }
+const boxes = 0
+const playered = 0
+const playerSize = 16
+const wallThickness = 20
+const online = 0
 
 const entities = {
   players: [],
@@ -136,22 +135,22 @@ const entities = {
       { isStatic: true }
     )
   ]
-};
+}
 
-engine.gravity.y = 0;
-engine.gravity.x = 0;
-Matter.Composite.add(engine.world, Object.values(entities).flat());
+engine.gravity.y = 0
+engine.gravity.x = 0
+Matter.Composite.add(engine.world, Object.values(entities).flat())
 
-let lastUpdate = Date.now();
-let lastDelta = Date.now();
-let dt;
+let lastUpdate = Date.now()
+let lastDelta = Date.now()
+let dt
 
 const resourcesFactory = (resourceCategory, x, y) => {
-  const entityId = uuid();
+  const entityId = uuid()
   const position = {
     x,
     y
-  };
+  }
   const entity = {
     id: entityId,
     position,
@@ -163,37 +162,37 @@ const resourcesFactory = (resourceCategory, x, y) => {
       isStatic: true,
       isSensor: true
     })
-  };
+  }
   switch (resourceCategory) {
     case 'tree':
-      entity.category = 'tree';
-      break;
+      entity.category = 'tree'
+      break
     case 'stone':
-      entity.category = 'stone';
-      entity.transform.radius = 10;
-      break;
+      entity.category = 'stone'
+      entity.transform.radius = 10
+      break
     case 'metal':
-      entity.category = 'metal';
-      break;
+      entity.category = 'metal'
+      break
     case 'herb':
-      entity.category = 'herb';
-      entity.transform.isSensor = true;
-      break;
+      entity.category = 'herb'
+      entity.transform.isSensor = true
+      break
     case 'leather':
-      entity.category = 'leather';
-      break;
+      entity.category = 'leather'
+      break
     case 'fish':
-      entity.category = 'fish';
-      break;
+      entity.category = 'fish'
+      break
     case 'sand':
-      entity.category = 'sand';
-      break;
+      entity.category = 'sand'
+      break
 
     default:
-      break;
+      break
   }
-  return entity;
-};
+  return entity
+}
 
 const trees = [
   {
@@ -236,7 +235,7 @@ const trees = [
     x: 650,
     y: 150
   }
-];
+]
 
 const herbs = [
   {
@@ -279,7 +278,7 @@ const herbs = [
     x: 780,
     y: 880
   }
-];
+]
 
 const stones = [
   {
@@ -322,63 +321,89 @@ const stones = [
     x: 730,
     y: 330
   }
-];
+]
 
 // Add Resources
 const generateResources = (type, resources) => {
   resources.forEach((resource) => {
-    const generatedResource = resourcesFactory(type, resource.x, resource.y);
-    global.networkEntities[generatedResource.id] = generatedResource;
-  });
-};
+    const generatedResource = resourcesFactory(type, resource.x, resource.y)
+    global.networkEntities[generatedResource.id] = generatedResource
+  })
+}
 
-generateResources('tree', trees);
-generateResources('herb', herbs);
-generateResources('stone', stones);
-// const tree = resourcesFactory('tree', 50, 50)
-// const tree1 = resourcesFactory('tree', 150, 550)
-// const tree2 = resourcesFactory('tree', 250, 250)
-// const tree3 = resourcesFactory('tree', 350, 250)
-// const herb = resourcesFactory('herb', 500, 500)
-// global.networkEntities[tree.id] = tree
-// global.networkEntities[tree1.id] = tree1
-// global.networkEntities[tree2.id] = tree2
-// global.networkEntities[tree3.id] = tree3
-// global.networkEntities[herb.id] = herb
+generateResources('tree', trees)
+generateResources('herb', herbs)
+generateResources('stone', stones)
 
+const databaseStorageTimer = cooldownTimer(1000)
 // console.log(global.networkEntities);
 // TODO Integrate tymesystem in the server...
-setInterval(() => {
-  let now = Date.now();
-  global.deltaTime = now - lastUpdate;
-  dt = (now - lastUpdate) / frameRate;
-  global.dt = dt;
+setInterval(async () => {
+  const now = Date.now()
+  global.deltaTime = now - lastUpdate
+  dt = (now - lastUpdate) / frameRate
+  global.dt = dt
   // console.log('correction', dt / lastDelta)
-  let correction = dt / lastDelta;
-  global.corretion = correction;
-  lastDelta = dt;
-  //console.log('dt',dt, now, lastUpdate)
-  //console.log('fps',1000/(now - lastUpdate))
-  let fps = 1000 / (now - lastUpdate);
+  const correction = dt / lastDelta
+  global.corretion = correction
+  lastDelta = dt
+  databaseStorageTimer.timeCounter(global.deltaTime)
+  if (databaseStorageTimer.timer.isReady) {
+    databaseStorageTimer.trigger()
+    // salvar en la base de datos
+    const anon = async () => {
+      for (const [, networkEntity] of Object.entries(global.networkEntities)) {
+        if (networkEntity.type === 'player') {
+          const {
+            id,
+            address,
+            type,
+            position,
+            target,
+            healthPoints,
+            items
+          } = networkEntity
+          const entityToStore = {
+            id,
+            address,
+            type,
+            position,
+            target,
+            healthPoints,
+            items
+          }
+          await playersDB.update({
+            address: entityToStore.address
+          }, { $set: entityToStore },
+          { upsert: true })
+        }
+      }
+    }
+    anon()
+  }
+  // console.log('dt',dt, now, lastUpdate)
+  // console.log('fps',1000/(now - lastUpdate))
+  // const fps = 1000 / (now - lastUpdate)
   // console.log(now - lastUpdate, dt, frameRate, fps)
-  lastUpdate = now;
-  entitiesSystem(world);
-  resourceSystem(world);
-  playerTransformSystem(world);
-  playerTargetMovementSystem(world);
-  detectResourceCollision(world);
-  destroyEntitiesSystem();
-  broadcastNetworkSystem(world);
+  lastUpdate = now
+  entitiesSystem(world)
+  resourceSystem(world)
+  playerTransformSystem(world)
+  playerTargetMovementSystem(world)
+  detectResourceCollision(world)
+  destroyEntitiesSystem()
+  broadcastNetworkSystem(world)
 
-  Matter.Engine.update(engine, dt, correction);
-  io.emit('broadcastNetworkClient', global.broadcastNetworkClient);
-}, frameRate);
+  Matter.Engine.update(engine, dt, correction)
+  io.emit('broadcastNetworkClient', global.broadcastNetworkClient)
+}, frameRate)
 
-//Each connection will manage his own data
+// Each connection will manage his own data
 io.on('connection', (socket) => {
   socket.on('login', async (authToken) => {
-     const address = '0x1BeDda29B3860d2AbE40A8f97047eFE01E184BC1'.toUpperCase()
+    const address = '0x1BeDda29B3860d2AbE40A8f97047eFE01E184BC1'.toUpperCase()
 
+    // !important prod
     // try {
     //   const token = authToken;
     //   const { address, body } = await Web3Token.verify(token);
@@ -416,64 +441,60 @@ io.on('connection', (socket) => {
     // }
 
     if (address) {
-      let player;
+      let player
       let newEntity
-      const entityId = uuid();
       /* Create a new player */
       try {
+        console.log('playercityo', address)
         player = await playersDB.findOne({
           address
-        });
+        })
         console.log('playercityo', player)
         if (player) {
+          console.log(player)
           newEntity = player
-          newEntity = {
-            id: entityId,
-            type: 'player',
-            position: { x: 0, y: 0 },
-            target: { x: 500, y: 500 },
-            action: 'idle',
-            healthPoints: 100,
-            items: null
-          };
-
         } else {
-          player = await playersDB.insert({
-            address
-          });
-          console.log('player', player)
+          const entityId = uuid()
           newEntity = {
             id: entityId,
+            address,
             type: 'player',
             position: { x: 0, y: 0 },
             target: { x: 500, y: 500 },
             action: 'idle',
             healthPoints: 100,
             items: null
-          };
+          }
+          player = await playersDB.insert(newEntity)
+          console.log('player', player)
         }
       } catch (error) {
         console.log(error)
       }
-
-      global.networkEntities[entityId] = newEntity;
-      socket.emit('loggedIn', { isLoggedIn: true, entityId });
+      const entityId = newEntity.id
+      // !important prod
+      // if (global.networkEntities[entityId]) {
+      //   socket.emit('loggedIn', { isLoggedIn: false, entityId })
+      //   return
+      // }
+      global.networkEntities[entityId] = newEntity
+      socket.emit('loggedIn', { isLoggedIn: true, entityId })
 
       socket.on('disconnect', () => {
-        global.networkEntities[entityId].destroyed = true;
-        console.log('disconnected', entityId);
-      });
+        global.networkEntities[entityId].destroyed = true
+        console.log('disconnected', entityId)
+      })
       socket.on('playerTarget', (coordinates) => {
         console.log('coordinates', coordinates)
-        global.networkEntities[entityId].target = coordinates;
+        global.networkEntities[entityId].target = coordinates
         // newPlayer.mousePosition = coordinates;
-      });
+      })
       socket.on('playerAction', (action) => {
-        console.log('action', action, entityId);
-        global.networkEntities[entityId].action = action;
-      });
+        console.log('action', action, entityId)
+        global.networkEntities[entityId].action = action
+      })
     }
-  });
-});
+  })
+})
 
-httpServer.listen(1234, () => console.log('server listening on ' + 1234));
+httpServer.listen(1234, () => console.log('server listening on ' + 1234))

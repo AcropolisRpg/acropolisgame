@@ -18,18 +18,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       entity.sprites.body = scene.add.sprite(0, 0, 'bodySpriteSheet');
       entity.sprites.clothes = scene.add.sprite(0, 0, 'clothesSpriteSheet');
       entity.sprites.shoes = scene.add.sprite(0, 0, 'shoesSpriteSheet');
-
       // console.log('el current player',window.acropolis.currentPlayerId, entity.id, )
-      if (window.acropolis.currentPlayerId === entity.id) {
-        scene.cameras.main.startFollow(
-          entity.sprites.body,
-          false,
-          timeSystem.clientDeltaTime * timeSystem.correction,
-          timeSystem.clientDeltaTime * timeSystem.correction
-        );
-        scene.cameras.main.zoom = 1;
-        scene.cameras.main.roundPixels = true;
-      }
     }
 
     const entities = spriteQuery(world);
@@ -48,6 +37,16 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       shoes.y = Position.y[id];
       entity.position.x  = Position.x[id];
       entity.position.y  = Position.y[id];
+      if (window.acropolis.currentPlayerId === entity.id) {
+        scene.cameras.main.startFollow(
+          entity.sprites.body,
+          false,
+          timeSystem.clientDeltaTime * timeSystem.correction,
+          timeSystem.clientDeltaTime * timeSystem.correction
+        );
+        scene.cameras.main.zoom = 1;
+        scene.cameras.main.roundPixels = true;
+      }
     }
 
     const exitEntities = spriteQueryExit(world);

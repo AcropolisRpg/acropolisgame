@@ -23,7 +23,7 @@
         "
         @click="initGame"
       >
-        Click here to Login!
+       {{ loginText}}
       </p>
     </div>
     <div v-else>
@@ -83,7 +83,8 @@ export default defineComponent({
   name: 'Acropolis',
   data() {
     return {
-      isLoggedIn: false
+      isLoggedIn: false,
+      loginText: 'Click here to Login!'
     };
   },
   methods: {
@@ -122,6 +123,11 @@ export default defineComponent({
   mounted() {
     socket.on('loggedIn', (data) => {
       const {isLoggedIn, entityId} = data
+      // !important prod
+      // if(!isLoggedIn) {
+      //   this.loginText = 'Account already logged in!'
+      //   return
+      // }
       window.acropolis = {}
       window.acropolis.networkSystem = networkUpdateStateSystem(socket)
       window.acropolis.currentPlayerId = entityId

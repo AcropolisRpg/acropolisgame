@@ -17,6 +17,7 @@ import { createTimeSystem } from '../systems/createTimeSystem';
 import createAnimationSystem from '../systems/createAnimationSystem';
 import { createResourceSpriteSystem } from '../systems/createResourceSpriteSystem';
 import { createHealthBarSystem } from '../systems/createHealthBarSystem';
+import { createItemsSystem } from '../systems/createItemsSystem';
 
 declare global {
   interface Window {
@@ -34,6 +35,7 @@ export default class Game extends Phaser.Scene {
   private animationSystem;
   private resourceSpriteSystem;
   private healthBarSystem;
+  private itemsSystem;
 
   init(data) {
     this.lobbyScene = {};
@@ -110,6 +112,7 @@ export default class Game extends Phaser.Scene {
     this.world = createWorld();
     this.timeSystem = createTimeSystem();
     this.entitySystem = createEntitySystem();
+    this.itemsSystem = createItemsSystem(this) 
     this.gameControllerSystem = createGameControllerSystem(
       this,
       this.lobbyScene.socket
@@ -158,6 +161,7 @@ export default class Game extends Phaser.Scene {
         // console.log('entra aca', !this.world || !this.spriteSystem || this.playerSystem || this.targetMovementSystem)
         return;
       }
+      this.itemsSystem(this.world)
       this.timeSystem(this.world);
       this.entitySystem(this.world);
       this.spriteSystem(this.world);
