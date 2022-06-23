@@ -32,9 +32,13 @@ export const createPlayerTargetMovementSystem = () => {
     for (let i = 0; i < entities.length; i++) {
       const id = entities[i]
       const networkEntity = global.networkEntities[global.entitiesByLocalId[id]]
-      if (!networkEntity.target) {
+      if (!networkEntity.target || !global.networkEntities?.[global.entitiesByLocalId?.[id]]?.transform?.position) {
         continue
       }
+      // if (!global.networkEntities?.[global.entitiesByLocalId?.[id]]?.transform?.position) {
+      //   console.log('parale al mame', global.networkEntities[global.entitiesByLocalId[id]].transform.position)
+      //   continue
+      // }
       const playerPosition = global.networkEntities[global.entitiesByLocalId[id]].transform.position
       if (getDistance(networkEntity.target, playerPosition) > 1) {
         const dt = global.dt

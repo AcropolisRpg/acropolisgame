@@ -45,10 +45,13 @@ export const createDetectResourceCollision = () => {
                     player.items = {}
                   }
                   if (!player.items.basicStone) {
-                    player.items.basicStone = 1
+                    player.items.basicStone = {
+                      name: 'basicStone',
+                      quantity: 1
+                    }
                   }
                   if (player.items.basicStone) {
-                    player.items.basicStone = player.items.basicStone + 1
+                    player.items.basicStone.quantity = player.items.basicStone.quantity + 1
                   }
                   console.log('player Items', player.items)
                 }
@@ -62,10 +65,13 @@ export const createDetectResourceCollision = () => {
                     player.items = {}
                   }
                   if (!player.items.basicHerb) {
-                    player.items.basicHerb = 1
+                    player.items.basicHerb = {
+                      name: 'basicHerb',
+                      quantity: 1
+                    }
                   }
                   if (player.items.basicHerb) {
-                    player.items.basicHerb = player.items.basicHerb + 1
+                    player.items.basicHerb.quantity = player.items.basicHerb.quantity + 1
                   }
                   console.log('player Items', player.items)
                 }
@@ -79,10 +85,13 @@ export const createDetectResourceCollision = () => {
                     player.items = {}
                   }
                   if (!player.items.basicWood) {
-                    player.items.basicWood = 1
+                    player.items.basicWood = {
+                      name: 'basicWood',
+                      quantity: 1
+                    }
                   }
                   if (player.items.basicWood) {
-                    player.items.basicWood = player.items.basicWood + 1
+                    player.items.basicWood.quantity = player.items.basicWood.quantity + 1
                   }
                   console.log('player Items', player.items)
                 }

@@ -107,6 +107,33 @@ export default class Game extends Phaser.Scene {
         frameHeight: 17
       }
     );
+    loadSpritesheet(
+      this,
+      'backpack',
+      '/game/rpg-pack/UI/backpack.png',
+      FRAME_SIZE_32_32
+    );
+    loadSpritesheet(
+      this,
+      'backpack',
+      '/game/rpg-pack/UI/backpack.png',
+      FRAME_SIZE_32_32
+    );
+    loadSpritesheet(
+      this,
+      'inventory',
+      '/game/rpg-pack/UI/inventory.png',
+      {
+        frameWidth: 192,
+        frameHeight: 192
+      }
+    );
+    loadSpritesheet(
+      this,
+      'icons',
+      '/game/icons/icons_full_32.png',
+      FRAME_SIZE_32_32
+    );
   }
   create() {
     this.world = createWorld();

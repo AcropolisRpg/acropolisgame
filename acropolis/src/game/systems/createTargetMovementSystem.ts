@@ -20,7 +20,7 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
       const id = entities[i];
       const entity =
         window.acropolis.networkSystem.getNetworkEntityByLocalId(id);
-      if (!entity) {
+      if (!entity || window?.acropolis?.inventory?.inventoryOpen) {
         continue;
       }
 

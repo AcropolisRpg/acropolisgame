@@ -1,10 +1,10 @@
 export const pathHandler = (url) => {
-  let pathPrefix = '';
+  let pathPrefix = ''
   if (process.env.ENVI === 'production') {
-    pathPrefix = '/game';
+    pathPrefix = '/game'
   }
-  return pathPrefix + url;
-};
+  return pathPrefix + url
+}
 
 // export const pathHandler = (url) => {
 //   let pathPrefix = '/game';

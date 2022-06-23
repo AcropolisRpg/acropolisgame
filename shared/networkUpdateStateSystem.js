@@ -10,6 +10,7 @@ export const networkUpdateStateSystem = (socket) => {
 
   socket.on('broadcastNetworkClient', (data) => {
     networkEntities = data;
+    // console.log('nwetworkentites', networkEntities)
   });
 
   const deleteNetworkEntityIDByLocalID = (id) => {
@@ -24,6 +25,11 @@ export const networkUpdateStateSystem = (socket) => {
   const setLocalEntityIDbyNetworkID = (networkId, localId) => {
     localEntitiesIDsByNetworkID[networkId] = localId
   }
+
+  const getNetworkEntityByNetworkID = (networkId) => {
+    return networkEntities[networkId]
+  }
+
   const getLocalEntityIDbyNetworkID = (networkId) => {
     return localEntitiesIDsByNetworkID[networkId]
   }
@@ -45,7 +51,7 @@ export const networkUpdateStateSystem = (socket) => {
   }
 
   const getLocalEntityByNetworkId = (id) => {
-
+    // console.log('localEntities', localEntities)
     const localEntity =  localEntities[getLocalEntityIDbyNetworkID(id)]
     return localEntity
   }
@@ -82,6 +88,7 @@ export const networkUpdateStateSystem = (socket) => {
     // Server values must be only readable.
     getNetworkEntities,
     getNetworkEntityByLocalId,
+    getNetworkEntityByNetworkID,
 
     // Local values can be written
     getLocalEntities,

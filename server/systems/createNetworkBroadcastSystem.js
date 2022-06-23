@@ -5,9 +5,9 @@ export const createBroadcastNetworkSystem = () => {
   return defineSystem((world) => {
     global.broadcastNetworkClient = {}
     for (const [networkEntityId, networkEntity] of Object.entries(global.networkEntities)) {
-      const { position, type, target, id, category, action } = networkEntity
+      const { position, type, target, id, category, action, items } = networkEntity
       if (type === 'player') {
-        global.broadcastNetworkClient[networkEntityId] = { position, type, target, id, action }
+        global.broadcastNetworkClient[networkEntityId] = { position, type, target, id, action, items }
       }
       if (type === 'resource') {
         global.broadcastNetworkClient[networkEntityId] = { position, type, id, category }

@@ -473,10 +473,10 @@ io.on('connection', (socket) => {
       }
       const entityId = newEntity.id
       // !important prod
-      // if (global.networkEntities[entityId]) {
-      //   socket.emit('loggedIn', { isLoggedIn: false, entityId })
-      //   return
-      // }
+      if (global.networkEntities[entityId]) {
+        socket.emit('loggedIn', { isLoggedIn: false, entityId })
+        return
+      }
       global.networkEntities[entityId] = newEntity
       socket.emit('loggedIn', { isLoggedIn: true, entityId })
 
