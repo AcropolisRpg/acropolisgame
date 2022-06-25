@@ -397,12 +397,13 @@ setInterval(async () => {
   Matter.Engine.update(engine, dt, correction)
   io.emit('broadcastNetworkClient', global.broadcastNetworkClient)
 }, frameRate)
-
+let x = 0
 // Each connection will manage his own data
 io.on('connection', (socket) => {
   socket.on('login', async (authToken) => {
-    const address = '0x1BeDda29B3860d2AbE40A8f97047eFE01E184BC1'.toUpperCase()
-
+    // const address = '0x1BeDda29B3860d2AbE40A8f97047eFE01E184BC1'.toUpperCase()
+    const address = x
+    x++
     // !important prod
     // try {
     //   const token = authToken;
