@@ -5,6 +5,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.shoes.play({
         key: 'runningShoes'
       })
+      playerInstance.sprites.hair.play({
+        key: 'runningHair'
+      })
       playerInstance.sprites.clothes.play({
         key: 'runningClothes'
       })

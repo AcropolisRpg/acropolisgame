@@ -18,6 +18,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       entity.sprites.body = scene.add.sprite(0, 0, 'bodySpriteSheet');
       entity.sprites.clothes = scene.add.sprite(0, 0, 'clothesSpriteSheet');
       entity.sprites.shoes = scene.add.sprite(0, 0, 'shoesSpriteSheet');
+      entity.sprites.hair = scene.add.sprite(0, 0, 'longStaightHairSpriteSheet');
       // console.log('el current player',window.acropolis.currentPlayerId, entity.id, )
     }
 
@@ -25,7 +26,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
     for (let i = 0; i < entities.length; i++) {
       const id = entities[i];
       const entity = getLocalEntityByLocalId(id);
-      const { body, clothes, shoes } = entity.sprites;
+      const { body, clothes, shoes, hair } = entity.sprites;
       if (!body) {
         continue;
       }
@@ -35,6 +36,8 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       clothes.y = Position.y[id];
       shoes.x = Position.x[id];
       shoes.y = Position.y[id];
+      hair.x = Position.x[id];
+      hair.y = Position.y[id];
       entity.position.x  = Position.x[id];
       entity.position.y  = Position.y[id];
       if (window.acropolis.currentPlayerId === entity.id) {
@@ -53,7 +56,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
     for (let i = 0; i < exitEntities.length; i++) {
       const id = exitEntities[i];
       const entity = getLocalEntityByLocalId(id);
-      const { body, clothes, shoes } = entity.sprites;
+      const { body, clothes, shoes , hair } = entity.sprites;
       console.log('spriteQuery Exit');
       if (!body) {
         continue;
@@ -61,6 +64,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       body.destroy();
       clothes.destroy();
       shoes.destroy();
+      hair.destroy();
     }
     return world;
   });

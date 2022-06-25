@@ -61,6 +61,12 @@ export default class Game extends Phaser.Scene {
     );
     loadSpritesheet(
       this,
+      'longStaightHairSpriteSheet',
+      '/game/character/hair/long_straight.png',
+      FRAME_SIZE_32_32
+    );
+    loadSpritesheet(
+      this,
       'clothesSpriteSheet',
       '/game/character/clothes/basic.png',
       FRAME_SIZE_32_32

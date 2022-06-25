@@ -9,6 +9,7 @@ import {
   Body,
   Shoes,
   Clothes,
+  Hair,
   Actions,
   Position,
   TargetPosition,
@@ -36,6 +37,7 @@ export const createEntitiesSystem = () => {
         addComponent(world, Position, entityId)
         addComponent(world, Body, entityId)
         addComponent(world, Shoes, entityId)
+        addComponent(world, Hair, entityId)
         addComponent(world, Clothes, entityId)
         addComponent(world, TargetPosition, entityId)
         addComponent(world, Actions, entityId)
