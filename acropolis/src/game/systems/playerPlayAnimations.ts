@@ -1,10 +1,12 @@
 const playerPlayAnimation = (scene, animationKey, playerInstance) => {
+
   switch (animationKey) {
     case 'running':
+
       playerInstance.sprites.body.play({ key: 'running' })
-      playerInstance.sprites.shoes.play({
-        key: 'runningShoes'
-      })
+      playerInstance.sprites.shoes.play({ 
+        key:'runningShoes'
+      })   
       playerInstance.sprites.hair.play({
         key: 'runningHair'
       })
@@ -14,8 +16,11 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       break
     case 'idle':
       playerInstance.sprites.body.play({ key: 'idle' })
-      playerInstance.sprites.shoes.play({
-        key: 'idleShoes'
+      playerInstance.sprites.shoes.play({ 
+        key: 'idleShoes' 
+      })     
+      playerInstance.sprites.hair.play({
+        key: 'idleHair'
       })
       playerInstance.sprites.clothes.play({
         key: 'idleClothes'
@@ -26,6 +31,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.shoes.play({
         key: 'attackShoes'
       })
+      playerInstance.sprites.hair.play({
+        key: 'attackHair'
+      })
       playerInstance.sprites.clothes.play({
         key: 'attackClothes'
       })
@@ -34,6 +42,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.body.play({ key: 'mining' })
       playerInstance.sprites.shoes.play({
         key: 'miningShoes'
+      })
+      playerInstance.sprites.hair.play({
+        key: 'miningHair'
       })
       playerInstance.sprites.clothes.play({
         key: 'miningClothes'
@@ -44,6 +55,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.shoes.play({
         key: 'gatheringShoes'
       })
+      playerInstance.sprites.hair.play({
+        key: 'gatheringHair'
+      })
       playerInstance.sprites.clothes.play({
         key: 'gatheringClothes'
       })
@@ -52,6 +66,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.body.play({ key: 'chopping' })
       playerInstance.sprites.shoes.play({
         key: 'choppingShoes'
+      })
+      playerInstance.sprites.hair.play({
+        key: 'choppingHair'
       })
       playerInstance.sprites.clothes.play({
         key: 'choppingClothes'
@@ -62,6 +79,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.shoes.play({
         key: 'fishingShoes'
       })
+      playerInstance.sprites.hair.play({
+        key: 'fishingHair'
+      })
       playerInstance.sprites.clothes.play({
         key: 'fishingClothes'
       })
@@ -71,6 +91,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.shoes.play({
         key: 'wateringShoes'
       })
+      playerInstance.sprites.hair.play({
+        key: 'wateringHair'
+      })
       playerInstance.sprites.clothes.play({
         key: 'wateringClothes'
       })
@@ -79,6 +102,9 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.body.play({ key: 'shoveling' })
       playerInstance.sprites.shoes.play({
         key: 'shovelingShoes'
+      })
+      playerInstance.sprites.hair.play({
+        key: 'shovelingHair'
       })
       playerInstance.sprites.clothes.play({
         key: 'shovelingClothes'
