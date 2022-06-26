@@ -1,6 +1,6 @@
 export const flipPlayerX = (sprites, flip = false) => {
   for (const [key] of Object.entries(sprites)) {
-    if (key === 'body' || key === 'clothes' || key === 'shoes') {
+    if (key === 'body' || key === 'clothes' || key === 'shoes' || key === 'hair') {
       sprites[key].flipX = flip
     }
   }

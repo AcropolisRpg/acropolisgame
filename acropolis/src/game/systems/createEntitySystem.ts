@@ -5,7 +5,7 @@ import {
   removeEntity,
   defineSystem
 } from 'bitecs'
-import { Resource, Position, TargetPosition, Actions, Body, Shoes, Clothes } from '../components/components'
+import { Resource, Position, TargetPosition, Actions, Body, Shoes, Hair, Clothes } from '../components/components'
 
 export const createEntitySystem = () => {
   return defineSystem((world) => {
@@ -40,6 +40,7 @@ export const createEntitySystem = () => {
         addComponent(world, Position, playerId)
         addComponent(world, Body, playerId)
         addComponent(world, Shoes, playerId)
+        addComponent(world, Hair, playerId)
         addComponent(world, Clothes, playerId)
         addComponent(world, TargetPosition, playerId)
         addComponent(world, Actions, playerId)
