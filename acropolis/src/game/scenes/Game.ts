@@ -18,6 +18,7 @@ import createAnimationSystem from '../systems/createAnimationSystem';
 import { createResourceSpriteSystem } from '../systems/createResourceSpriteSystem';
 import { createHealthBarSystem } from '../systems/createHealthBarSystem';
 import { createItemsSystem } from '../systems/createItemsSystem';
+import { createSkillsSystem } from '../systems/createSkillsSystem';
 
 declare global {
   interface Window {
@@ -36,6 +37,7 @@ export default class Game extends Phaser.Scene {
   private resourceSpriteSystem;
   private healthBarSystem;
   private itemsSystem;
+  private skillsSystem
 
   init(data) {
     this.lobbyScene = {};
@@ -149,6 +151,7 @@ export default class Game extends Phaser.Scene {
       'clothesSpriteSheet',
       'shoesSpriteSheet'
     ]);
+    this.skillsSystem = createSkillsSystem(this)
     this.healthBarSystem = createHealthBarSystem(this)
     this.animationSystem = createAnimationSystem(this);
     this.targetMovementSystem = createTargetMovementSystem(
@@ -194,6 +197,8 @@ export default class Game extends Phaser.Scene {
       this.spriteSystem(this.world);
       this.healthBarSystem(this.world)
       this.resourceSpriteSystem(this.world)
+      this.skillsSystem(this.world)
+
       this.targetMovementSystem(this.world);
       this.gameControllerSystem(this.world);
       this.animationSystem(this.world);

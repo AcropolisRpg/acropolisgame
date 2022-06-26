@@ -7,6 +7,7 @@ const createGameControllerSystem = (scene: Phaser.Scene, socket) => {
   const keys: any = scene.input.keyboard.addKeys(inputKeys);
   const inputKeysList = inputKeys.split(',');
   const cooldownTime = cooldownTimer(100);
+  const activePointer = scene.input.activePointer;
   return defineSystem((world) => {
     const currentPlayer =
       window.acropolis.networkSystem.getLocalEntityByNetworkId(
@@ -30,7 +31,10 @@ const createGameControllerSystem = (scene: Phaser.Scene, socket) => {
                 y: currentPlayer.position.y
               });
               socket.emit('playerAction', 'skill');
-             
+              socket.emit('playerSkillPosition', {
+                x: activePointer.worldX,
+                y: activePointer.worldY
+              });
             }
             currentPlayer.action = 'skill';
 

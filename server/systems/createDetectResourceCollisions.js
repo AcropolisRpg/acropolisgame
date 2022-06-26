@@ -18,6 +18,18 @@ export const createDetectResourceCollision = () => {
       timers[player.id].timeCounter(global.deltaTime)
       // console.log('timers[player.id].timer.currentTime', global.deltaTime, timers[player.id].timer.currentTime)
       for (const [, entityB] of Object.entries(networkEntities)) {
+        if (
+          player?.transform &&
+          entityB?.activeSkill &&
+          Matter.Collision.collides(player.transform, entityB.activeSkill) !== null
+        ) {
+          console.log(' le parte su madre', player.healthPoints)
+          player.healthPoints -= 0.1
+          if (player.healthPoints <= 0) {
+            player.healthPoints = 100
+          }
+        }
+
         if (player.id === entityB.id) {
           continue
         }

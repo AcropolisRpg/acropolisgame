@@ -63,10 +63,14 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
         } else {
           flipPlayerX(localEntity.sprites, true);
         }
+        if(activePointer.y > 550 && activePointer.x > 550){
+          return
+        }
         socket.emit('playerTarget', {
           x: Math.round(activePointer.worldX),
           y: Math.round(activePointer.worldY)
         });
+
       }
     }
     return world;

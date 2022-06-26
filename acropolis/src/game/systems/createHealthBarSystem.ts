@@ -18,7 +18,21 @@ export const createHealthBarSystem = (scene: Phaser.Scene) => {
       entity.sprites.healthBarDecoration.setScrollFactor(0, 0)
       entity.sprites.healthBar = scene.add.sprite(57, 15, 'healthBar')
       entity.sprites.healthBar.setScrollFactor(0, 0)
+      
     }
+    const entities = spriteQuery(world)
+    for (let i = 0; i < entities.length; i++) {
+      const id = entities[i];
+      const entity = getLocalEntityByLocalId(id);
+      const networkEntity = window.acropolis.networkSystem.getNetworkEntityByLocalId(id)
+      if(networkEntity.healthPoints < 100) {
+        // console.log('orale perro', entity.healthPoints)
+        const multiplier = networkEntity.healthPoints/100
+        entity.healthPoints = networkEntity.healthPoints
+        entity.sprites.healthBar.setCrop(0, 0, 50 * multiplier, 10)
+      }
+    }
+ 
 
     const exitEntities = spriteQueryExit(world);
     for (let i = 0; i < exitEntities.length; i++) {

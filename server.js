@@ -16,6 +16,7 @@ import { createResourceSystem } from './server/systems/createResourceSystem.js'
 import { createDetectResourceCollision } from './server/systems/createDetectResourceCollisions.js'
 import monk from 'monk'
 import { cooldownTimer } from './server/utils/utils.js'
+import { createSkillSystem } from './server/systems/createSkillsSystem.js'
 
 const url = 'localhost:27017/game'
 const db = monk(url)
@@ -81,6 +82,7 @@ const entitiesSystem = createEntitiesSystem()
 const resourceSystem = createResourceSystem(engine)
 const playerTransformSystem = createPlayerTransformSystem(engine)
 const playerTargetMovementSystem = createPlayerTargetMovementSystem(engine)
+const skillSystem = createSkillSystem(engine)
 const detectResourceCollision = createDetectResourceCollision()
 const destroyEntitiesSystem = createDestroyEntitiesSystem()
 const broadcastNetworkSystem = createBroadcastNetworkSystem()
@@ -390,6 +392,7 @@ setInterval(async () => {
   resourceSystem(world)
   playerTransformSystem(world)
   playerTargetMovementSystem(world)
+  skillSystem(world)
   detectResourceCollision(world)
   destroyEntitiesSystem()
   broadcastNetworkSystem(world)
@@ -493,6 +496,10 @@ io.on('connection', (socket) => {
       socket.on('playerAction', (action) => {
         console.log('action', action, entityId)
         global.networkEntities[entityId].action = action
+      })
+      socket.on('playerSkillPosition', (coordinates) => {
+        console.log('skillPosition', coordinates, entityId)
+        global.networkEntities[entityId].skillPosition = coordinates
       })
     }
   })

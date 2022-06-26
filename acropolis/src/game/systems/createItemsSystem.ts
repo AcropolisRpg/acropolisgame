@@ -10,7 +10,7 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
   const timeSystem = window.acropolis.timeSystem;
   const getLocalEntityByLocalId =
     window.acropolis.networkSystem.getLocalEntityByLocalId;
-  let executed = false;
+  let initBackpack = false;
   let x = 288;
   let y = 416;
   let counter = 1;
@@ -21,7 +21,7 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
   let entity;
   let networkEntity;
 
-  const generateInventoryLayout = () =>{
+  const generateInventoryLayout = () => {
     for (let y = 0; y < 4; y++) {
       layoutX = 288;
       for (let x = 0; x < 8; x++) {
@@ -35,9 +35,9 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
       }
       layoutY += 32;
     }
-  }
+  };
 
-  const makeItemDraggable = (entity,key) => {
+  const makeItemDraggable = (key, entity) => {
     entity.sprites.items[key].sprite.setInteractive();
     entity.sprites.items[key].sprite.setData({ id: key });
     entity.sprites.items[key].sprite.setScrollFactor(0, 0);
@@ -53,18 +53,29 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
     });
     entity.sprites.items[key].qty.setScrollFactor(0, 0);
     scene.input.setDraggable(entity.sprites.items[key].sprite);
-  }
+  };
 
-  const updateLayoutCounter = () =>{
+  const updateLayoutCounter = () => {
     x += 32;
     counter++;
     if (counter > 8) {
       y += 32;
       x = 288;
     }
-  }
+  };
 
-  const setItemImage = (entity, key) => {
+  const updateInventoryLayoutItem = (key, item) => {
+    inventoryLayout.forEach((inventoryItem) => {
+      if (
+        inventoryItem.position.x === item.sprite.x &&
+        inventoryItem.position.y === item.sprite.y
+      ) {
+        inventoryItem.itemId = key;
+      }
+    });
+  };
+
+  const setItemImage = (key, entity) => {
     switch (key) {
       case 'basicWood':
         entity.sprites.items[key].sprite.setFrame(16 * 60 - 2);
@@ -78,73 +89,9 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
       default:
         break;
     }
-  }
+  };
 
-  return defineSystem((world) => {
-    if (!window?.acropolis?.currentPlayerId || executed) {
-      return;
-    }
-    entity = window.acropolis.networkSystem.getLocalEntityByNetworkId(
-      window.acropolis.currentPlayerId
-    );
-    networkEntity = window.acropolis.networkSystem.getNetworkEntityByNetworkID(
-      window.acropolis.currentPlayerId
-    );
-    if (!entity?.sprites) {
-      return;
-    }
-    executed = true;
-
-    entity.sprites.inventory = scene.add.sprite(400, 370, 'inventory');
-    entity.sprites.backpack = scene.add.sprite(575, 575, 'backpack');
-    scene.input.topOnly = false;
-
-    generateInventoryLayout()
-
-    if (networkEntity.items) {
-      //estop ver donde va
-      entity.sprites.items = {};
-      if (entity.items) {
-        // Layout 16x64
-        for (const [key, networkItem] of Object.entries<any>(
-          networkEntity.items
-        )) {
-          if (entity.sprites.items[key]) {
-            continue;
-          }
-          const item = {
-            sprite: scene.add.sprite(x, y, 'icons'),
-            qty: scene.add.text(x, y, networkItem.quantity)
-          };
-          inventoryLayout.forEach((inventoryItem) => {
-            if (
-              inventoryItem.position.x === item.sprite.x &&
-              inventoryItem.position.y === item.sprite.y
-            ) {
-              inventoryItem.itemId = key;
-            }
-          });
-          entity.sprites.items[key] = item;
- 
-          setItemImage(entity, key)
-          //stone
-          //herb
-
-          // Make items drraggable
-          makeItemDraggable(key, entity)
-          updateLayoutCounter()
-        }
-      }
-    }
-
-    entity.sprites.backpack.setScrollFactor(0, 0);
-    entity.sprites.backpack.setInteractive();
-    window.acropolis.inventory = {};
-    window.acropolis.inventory.inventoryOpen = true;
-    entity.sprites.inventory.setScrollFactor(0, 0);
-    entity.sprites.inventory.setInteractive();
-    entity.sprites.inventory.setScale(2);
-    entity.sprites.backpack.setName('backpack');
+  const manageDnDInventory = () => {
     scene.input.on('drag', function (pointer, gameObject, dragX, dragY) {
       if (dragX >= 288 && dragX <= 512 && dragY >= 416 && dragY <= 512) {
         gameObject.x = Phaser.Math.Snap.To(dragX, 32);
@@ -160,14 +107,11 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
             );
             if (currentItemInventory) {
               const itemId = currentItemInventory.itemId;
-              entity.sprites.items[inventoryItem.itemId].sprite.x =
-                currentItemInventory.position.x;
-              entity.sprites.items[inventoryItem.itemId].sprite.y =
-                currentItemInventory.position.y;
-              entity.sprites.items[inventoryItem.itemId].qty.x =
-                currentItemInventory.position.x;
-              entity.sprites.items[inventoryItem.itemId].qty.y =
-                currentItemInventory.position.y;
+              const itemToUpdate = entity.sprites.items[inventoryItem.itemId];
+              itemToUpdate.sprite.x = currentItemInventory.position.x;
+              itemToUpdate.sprite.y = currentItemInventory.position.y;
+              itemToUpdate.qty.x = currentItemInventory.position.x;
+              itemToUpdate.qty.y = currentItemInventory.position.y;
               currentItemInventory.itemId = inventoryItem.itemId;
               inventoryItem.itemId = itemId;
             }
@@ -185,6 +129,23 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
         });
       }
     });
+  };
+
+  const createBackPackInventory = (entity) => {
+    entity.sprites.inventory = scene.add.sprite(400, 370, 'inventory');
+    entity.sprites.backpack = scene.add.sprite(575, 575, 'backpack');
+    scene.input.topOnly = false;
+    entity.sprites.backpack.setScrollFactor(0, 0);
+    entity.sprites.backpack.setInteractive();
+    window.acropolis.inventory = {};
+    window.acropolis.inventory.inventoryOpen = true;
+    entity.sprites.inventory.setScrollFactor(0, 0);
+    entity.sprites.inventory.setInteractive();
+    entity.sprites.inventory.setScale(2);
+    entity.sprites.backpack.setName('backpack');
+  };
+
+  const openCloseBackpackInventory = () => {
     scene.input.on(
       'pointerdown',
       (
@@ -207,6 +168,89 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
         }
       }
     );
+  };
+
+  return defineSystem((world) => {
+    if (!window?.acropolis?.currentPlayerId) {
+      return;
+    }
+    /// intentando hacer el ciclo de refrescamiento
+    entity = window.acropolis.networkSystem.getLocalEntityByNetworkId(
+      window.acropolis.currentPlayerId
+    );
+    networkEntity = window.acropolis.networkSystem.getNetworkEntityByNetworkID(
+      window.acropolis.currentPlayerId
+    );
+    // Refresh items if doesn't have items.
+    if(entity?.items === null){
+      entity.items = networkEntity.items
+    }
+    if (initBackpack) {
+      if (networkEntity?.items) {
+        if (entity?.items) {
+          // Layout 16x64
+          for (const [key, networkItem] of Object.entries<any>(
+            networkEntity.items
+          )) {
+            if (entity.sprites.items[key]) {
+              //actualizar el texto de cantidad de items
+              entity.sprites.items[key].qty.setText(networkItem.quantity);
+              continue;
+            }
+            const item = {
+              sprite: scene.add.sprite(x, y, 'icons'),
+              qty: scene.add.text(x, y, networkItem.quantity)
+            };
+            entity.sprites.items[key] = item;
+
+            const visibility = window.acropolis.inventory.inventoryOpen;
+            item.sprite.setVisible(visibility);
+            item.qty.setVisible(visibility);
+
+            updateInventoryLayoutItem(key, item);
+            setItemImage(key, entity);
+            makeItemDraggable(key, entity);
+            updateLayoutCounter();
+          }
+        }
+      }
+    }
+    // qeui termina el intento
+    if (initBackpack) {
+      return;
+    }
+
+    if (!entity?.sprites) {
+      return;
+    }
+    initBackpack = true;
+    createBackPackInventory(entity);
+    generateInventoryLayout();
+    entity.sprites.items = {};
+    if (networkEntity?.items) {
+      //estop ver donde va
+      if (entity?.items) {
+        // Layout 16x64
+        for (const [key, networkItem] of Object.entries<any>(
+          networkEntity.items
+        )) {
+          if (entity.sprites.items[key]) {
+            continue;
+          }
+          const item = {
+            sprite: scene.add.sprite(x, y, 'icons'),
+            qty: scene.add.text(x, y, networkItem.quantity)
+          };
+          entity.sprites.items[key] = item;
+          updateInventoryLayoutItem(key, item);
+          setItemImage(key, entity);
+          makeItemDraggable(key, entity);
+          updateLayoutCounter();
+        }
+      }
+    }
+    manageDnDInventory();
+    openCloseBackpackInventory();
 
     // TODO actualizar los estupidos valores numericos de la base de datos porque claro que si!
     // TODO revidsar porque se rompe el sistema de ordenamiento de items.
