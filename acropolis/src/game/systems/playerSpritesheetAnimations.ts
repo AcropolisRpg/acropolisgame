@@ -182,9 +182,9 @@ const animatedPlayer = (scene) => {
   //Hair
   const runningHair = {
     key: 'runningHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 8*14*3,
-      end: 8*14*3+7
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 2,
+      end: 8 * 14 * 2 + 7
     }),
     frameRate: 15,
     repeat: -1
@@ -192,8 +192,8 @@ const animatedPlayer = (scene) => {
   scene.anims.create(runningHair)
   const idleHair = {
     key: 'idleHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      frames: [160]
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      frames: [8 * 14 * 2]
     }),
     frameRate: 7,
     repeat: -1
@@ -201,9 +201,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(idleHair)
   const attackHair = {
     key: 'attackHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 1440,
-      end: 1443
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 18,
+      end: 8 * 14 * 18 + 3
     }),
     frameRate: 7,
     repeat: -1
@@ -211,9 +211,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(attackHair)
   const miningHair = {
     key: 'miningHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 2480,
-      end: 2483
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 31,
+      end: 8 * 14 * 31 + 4
     }),
     frameRate: 7,
     repeat: -1
@@ -221,9 +221,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(miningHair)
   const gatheringHair = {
     key: 'gatheringHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 8 * 10 * 10,
-      end: 8 * 10 * 10 + 2
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 10,
+      end: 8 * 14 * 10 + 2
     }),
     frameRate: 7,
     repeat: -1
@@ -231,9 +231,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(gatheringHair)
   const choppingHair = {
     key: 'choppingHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 8 * 10 * 35,
-      end: 8 * 10 * 35 + 4
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 35,
+      end: 8 * 14 * 35 + 4
     }),
     frameRate: 7,
     repeat: -1
@@ -241,9 +241,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(choppingHair)
   const fishingHair = {
     key: 'fishingHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 8 * 10 * 47,
-      end: 8 * 10 * 47 + 4
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 47,
+      end: 8 * 14 * 47 + 4
     }),
     frameRate: 7,
     repeat: 0
@@ -251,9 +251,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(fishingHair)
   const wateringHair = {
     key: 'wateringHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 8 * 10 * 39,
-      end: 8 * 10 * 39
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 39,
+      end: 8 * 14 * 39
     }),
     frameRate: 3,
     repeat: -1
@@ -261,9 +261,9 @@ const animatedPlayer = (scene) => {
   scene.anims.create(wateringHair)
   const shovelingHair = {
     key: 'shovelingHair',
-    frames: scene.anims.generateFrameNumbers('longStaightHairSpriteSheet', {
-      start: 8 * 10 * 43,
-      end: 8 * 10 * 43 + 4
+    frames: scene.anims.generateFrameNumbers('gentlemanHairSpriteSheet', {
+      start: 8 * 14 * 43,
+      end: 8 * 14 * 43 + 4
     }),
     frameRate: 7,
     repeat: -1

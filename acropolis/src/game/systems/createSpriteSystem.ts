@@ -18,7 +18,7 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       entity.sprites.body = scene.add.sprite(0, 0, 'bodySpriteSheet');
       entity.sprites.clothes = scene.add.sprite(0, 0, 'clothesSpriteSheet');
       entity.sprites.shoes = scene.add.sprite(0, 0, 'shoesSpriteSheet');
-      entity.sprites.hair = scene.add.sprite(0, 0, 'longStaightHairSpriteSheet');
+      entity.sprites.hair = scene.add.sprite(0, 0, 'gentlemanHairSpriteSheet');
       // console.log('el current player',window.acropolis.currentPlayerId, entity.id, )
     }
 

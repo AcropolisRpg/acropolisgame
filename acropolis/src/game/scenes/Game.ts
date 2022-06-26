@@ -59,10 +59,17 @@ export default class Game extends Phaser.Scene {
       '/game/character/clothes/shoes.png',
       FRAME_SIZE_32_32
     );
+    //'buzzcut.png',hitler
+    //'curly.png',afro
+    //'french_curl.png',señora
+    //'gentleman.png', joven
+    //'midiwave.png', greñuda
+    //'ponytail.png', chopo de hershey
+    //'spacebuns.png',sailor moon
     loadSpritesheet(
       this,
-      'longStaightHairSpriteSheet',
-      '/game/character/hair/long_straight.png',
+      'gentlemanHairSpriteSheet',
+      '/game/character/hair/gentleman.png',
       FRAME_SIZE_32_32
     );
     loadSpritesheet(
