@@ -67,16 +67,16 @@ import io from 'socket.io-client';
 //const socket = io();
 // prod
 let socket;
-// if (process.env.ENVI === 'production') {
-//   socket = io(window.location.origin, { path: '/gameSocket' });
-// } else {
-  socket = io();
-  //  socket = io(window.location.origin, { path: '/gameSocket' });
-// }
+if (process.env.ENVI === 'production') {
+  socket = io(window.location.origin, { path: '/gameSocket' });
+} else {
+  // socket = io();
+  socket = io(window.location.origin, { path: '/gameSocket' });
+}
 
 // import TitleScreen from '../game/scenes/TileScreen'
-// import Web3 from 'web3';
-// import Web3Token from 'web3-token';
+import Web3 from 'web3';
+import Web3Token from 'web3-token';
 import { defineComponent } from 'vue'
 import { networkUpdateStateSystem } from '../../../shared/networkUpdateStateSystem';
 export default defineComponent({
@@ -101,20 +101,20 @@ export default defineComponent({
         });
 
         // Connection to MetaMask wallet
-        // const web3 = new Web3(window.ethereum);
-        // await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const web3 = new Web3(window.ethereum);
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-        // // getting address from which we will sign message
-        // const address = (await web3.eth.getAccounts())[0];
+        // getting address from which we will sign message
+        const address = (await web3.eth.getAccounts())[0];
 
-        // // generating a token with 1 day of expiration time
-        // const token = await Web3Token.sign(
-        //   (msg) => web3.eth.personal.sign(msg, address),
-        //   '1d'
-        // );
-        // console.log(token);
-        // socket.emit('login', token);
-        socket.emit('login');
+        // generating a token with 1 day of expiration time
+        const token = await Web3Token.sign(
+          (msg) => web3.eth.personal.sign(msg, address),
+          '1d'
+        );
+        console.log(token);
+        socket.emit('login', token);
+        // socket.emit('login');
       };
 
       test();

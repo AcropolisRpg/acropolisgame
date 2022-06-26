@@ -400,58 +400,60 @@ setInterval(async () => {
   Matter.Engine.update(engine, dt, correction)
   io.emit('broadcastNetworkClient', global.broadcastNetworkClient)
 }, frameRate)
-let x = 0
+const x = 0
 // Each connection will manage his own data
 io.on('connection', (socket) => {
   socket.on('login', async (authToken) => {
     // const address = '0x1BeDda29B3860d2AbE40A8f97047eFE01E184BC1'.toUpperCase()
-    const address = x
-    x++
+    // const address = x
+    // x++
+    let playerAddress
     // !important prod
-    // try {
-    //   const token = authToken;
-    //   const { address, body } = await Web3Token.verify(token);
-    //   if (address) {
-    //     console.log('address body', address, body);
-    //     const wallets = await axios({
-    //       method: 'get',
-    //       url: 'https://www.acropolisrpg.com/api/wallets'
-    //     });
-    //     console.log('wallets', wallets.data);
-    //     const wallet = wallets.data.find(
-    //       (wallet) =>
-    //         wallet.address.toString().toUpperCase() ===
-    //         address.toString().toUpperCase()
-    //     );
-    //     console.log('existe', wallet);
-    //     socket.emit('loggedIn', true);
-    //     try {
-    //       const nonce = await axios({
-    //         method: 'get',
-    //         url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`
-    //       });
-    //       console.log(nonce);
-    //       const claimed = await axios({
-    //         method: 'get',
-    //         url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`
-    //       });
-    //       console.log(claimed);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const token = authToken
+      const { address, body } = await Web3Token.verify(token)
+      playerAddress = address
+      if (address) {
+        console.log('address body', address, body)
+        const wallets = await axios({
+          method: 'get',
+          url: 'https://www.acropolisrpg.com/api/wallets'
+        })
+        console.log('wallets', wallets.data)
+        const wallet = wallets.data.find(
+          (wallet) =>
+            wallet.address.toString().toUpperCase() ===
+            address.toString().toUpperCase()
+        )
+        console.log('existe', wallet)
+        socket.emit('loggedIn', true)
+        try {
+          const nonce = await axios({
+            method: 'get',
+            url: `https://www.acropolisrpg.com/api/acropolis/nonce/${wallet.address}`
+          })
+          console.log(nonce)
+          const claimed = await axios({
+            method: 'get',
+            url: `https://www.acropolisrpg.com/api/acropolis/claim/${wallet.address}/${nonce.data}`
+          })
+          console.log(claimed)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
 
-    if (address) {
+    if (playerAddress) {
       let player
       let newEntity
       /* Create a new player */
       try {
-        console.log('playercityo', address)
+        console.log('playercityo', playerAddress)
         player = await playersDB.findOne({
-          address
+          playerAddress
         })
         console.log('playercityo', player)
         if (player) {
@@ -461,7 +463,7 @@ io.on('connection', (socket) => {
           const entityId = uuid()
           newEntity = {
             id: entityId,
-            address,
+            playerAddress,
             type: 'player',
             position: { x: 0, y: 0 },
             target: { x: 500, y: 500 },
