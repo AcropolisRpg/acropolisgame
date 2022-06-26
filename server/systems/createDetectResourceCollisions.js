@@ -25,7 +25,7 @@ export const createDetectResourceCollision = () => {
         ) {
           console.log(' le parte su madre', player.healthPoints)
           player.healthPoints -= 0.1
-          if (player.healthPoints <= 0) {
+          if (player.healthPoints <= 1) {
             player.healthPoints = 100
           }
         }
