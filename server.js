@@ -376,8 +376,7 @@ setInterval(async () => {
           }
           await playersDB.update({
             address: entityToStore.address
-          }, { $set: entityToStore },
-          { upsert: true })
+          }, { $set: entityToStore })
         }
       }
     }
