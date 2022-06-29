@@ -412,7 +412,7 @@ io.on('connection', (socket) => {
     try {
       const token = authToken
       const { address, body } = await Web3Token.verify(token)
-      playerAddress = address
+      playerAddress = address.toString().toUpperCase()
       if (address) {
         console.log('address body', address)
         const wallets = await axios({
