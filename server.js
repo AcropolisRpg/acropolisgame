@@ -453,7 +453,7 @@ io.on('connection', (socket) => {
       try {
         console.log('playercityo', playerAddress)
         player = await playersDB.findOne({
-          playerAddress
+          address: playerAddress
         })
         console.log('playercityo', player)
         if (player) {
