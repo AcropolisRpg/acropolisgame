@@ -403,6 +403,7 @@ const x = 0
 // Each connection will manage his own data
 io.on('connection', (socket) => {
   socket.on('login', async (authToken) => {
+    console.log('lanza el login')
     // const address = '0x1BeDda29B3860d2AbE40A8f97047eFE01E184BC1'.toUpperCase()
     // const address = x
     // x++
@@ -413,18 +414,18 @@ io.on('connection', (socket) => {
       const { address, body } = await Web3Token.verify(token)
       playerAddress = address
       if (address) {
-        console.log('address body', address, body)
+        console.log('address body', address)
         const wallets = await axios({
           method: 'get',
           url: 'https://www.acropolisrpg.com/api/wallets'
         })
-        console.log('wallets', wallets.data)
+        // console.log('wallets', wallets.data)
         const wallet = wallets.data.find(
           (wallet) =>
             wallet.address.toString().toUpperCase() ===
             address.toString().toUpperCase()
         )
-        console.log('existe', wallet)
+        // console.log('existe', wallet)
         socket.emit('loggedIn', true)
         try {
           const nonce = await axios({
