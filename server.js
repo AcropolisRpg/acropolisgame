@@ -463,7 +463,7 @@ io.on('connection', (socket) => {
           const entityId = uuid()
           newEntity = {
             id: entityId,
-            playerAddress,
+            address: playerAddress,
             type: 'player',
             position: { x: 0, y: 0 },
             target: { x: 500, y: 500 },
