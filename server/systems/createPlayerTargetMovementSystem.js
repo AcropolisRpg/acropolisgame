@@ -73,8 +73,9 @@ export const createPlayerTargetMovementSystem = () => {
         networkEntity.position.y = global.networkEntities[global.entitiesByLocalId[id]].transform.position.y
       }
 
-      if (getDistance(networkEntity.target, playerPosition) < 1 && networkEntity.action === 'running') {
+      if (getDistance(networkEntity.target, playerPosition) < 5 && networkEntity.action === 'running') {
         networkEntity.action = 'idle'
+        // Matter.Body.setPosition(global.networkEntities[global.entitiesByLocalId[id]].transform, networkEntity.target)
       }
     }
     return world

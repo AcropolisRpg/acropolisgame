@@ -14,11 +14,16 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
     for (let i = 0; i < enterEntities.length; i++) {
       const id = enterEntities[i];
       const entity = getLocalEntityByLocalId(id);
+      const networkEntity =  window.acropolis.networkSystem.getNetworkEntityByLocalId(id)
       entity.sprites = {};
       entity.sprites.body = scene.add.sprite(0, 0, 'bodySpriteSheet');
       entity.sprites.clothes = scene.add.sprite(0, 0, 'clothesSpriteSheet');
       entity.sprites.shoes = scene.add.sprite(0, 0, 'shoesSpriteSheet');
       entity.sprites.hair = scene.add.sprite(0, 0, 'gentlemanHairSpriteSheet');
+      Position.x[id] = networkEntity.position.x
+      Position.y[id] = networkEntity.position.y
+      entity.position.x  = Position.x[id];
+      entity.position.y  = Position.y[id];
       // console.log('el current player',window.acropolis.currentPlayerId, entity.id, )
     }
 
@@ -43,13 +48,18 @@ export const createSpriteSystem = (scene: Phaser.Scene, textures: string[]) => {
       if (window.acropolis.currentPlayerId === entity.id) {
         scene.cameras.main.startFollow(
           entity.sprites.body,
-          false,
+          true,
           timeSystem.clientDeltaTime * timeSystem.correction,
           timeSystem.clientDeltaTime * timeSystem.correction
         );
         scene.cameras.main.zoom = 1;
         scene.cameras.main.roundPixels = true;
+      // scene.cameras.main.startFollow
+      // console.log(entity.position.x, entity.position.y)
       }
+      // console.log
+      // scene.cameras.main.x = entity.position.x
+      // scene.cameras.main.y = entity.position.y
     }
 
     const exitEntities = spriteQueryExit(world);

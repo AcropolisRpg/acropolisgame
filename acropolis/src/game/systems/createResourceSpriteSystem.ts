@@ -32,7 +32,52 @@ export const createResourceSpriteSystem = (scene: Phaser.Scene) => {
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'TXprops');
         entity.sprites.body.setFrame(245)
       }
+      if (entity.category === 'sand') {
+        console.log('pintalamadre')
+        entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'sand');
+        // entity.sprites.body.setFrame(4)
+      }
+      if (entity.category === 'animal') {
+        console.log('pintalamadre234')
+        entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'chicken');
+        entity.sprites.body.setFrame(4)
+        const animatedChicken = {
+          key: 'animatedChicken',
+          frames: scene.anims.generateFrameNumbers('chicken', {
+            start: 1,
+            end: 4
+          }),
+          frameRate: 4,
+          repeat: -1
+        }
+        scene.anims.create(animatedChicken)
+        setTimeout( ()=>{
+          entity.sprites.body.play({ 
+            key:'animatedChicken'
+          })   
+        },1000)
 
+      }
+      if (entity.category === 'crop') {
+        console.log('pintalamadre234')
+        entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'crops');
+        entity.sprites.body.setFrame(4)
+        const animatedCrop = {
+          key: 'animatedCrop',
+          frames: scene.anims.generateFrameNumbers('crops', {
+            start: 1,
+            end: 5
+          }),
+          frameRate: 0.1,
+          repeat: -1
+        }
+        scene.anims.create(animatedCrop)
+        setTimeout( ()=>{
+          entity.sprites.body.play({ 
+            key:'animatedCrop'
+          })   
+        },1000)
+      }
 
       // !Important To set multiple resources you can select a frame and change widh and height or without for default
       // if(id === 0) {

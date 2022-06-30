@@ -29,7 +29,7 @@
     <div v-else>
       <div style="text-align: center; margin: 25px auto">
         <h3 style="color: #fff">Acropolis Playgrounds BETA Development!</h3>
-        <div id="phaser-example" style="border-radius: 100px"></div>
+        <div id="phaser-example" style="width: 100%"></div>
         <h3 style="color: #fff">
           Click anywhere to move around or press "QWERASDF" key for skills.
         </h3>
@@ -70,8 +70,8 @@ let socket;
 if (process.env.ENVI === 'production') {
   socket = io(window.location.origin, { path: '/gameSocket' });
 } else {
-  // socket = io();
-  socket = io(window.location.origin, { path: '/gameSocket' });
+  socket = io();
+  // socket = io(window.location.origin, { path: '/gameSocket' });
 }
 
 // import TitleScreen from '../game/scenes/TileScreen'
@@ -134,9 +134,16 @@ export default defineComponent({
       window.acropolis.currentPlayerId = entityId
       window.acropolis.socket = socket
       this.isLoggedIn = isLoggedIn;
+      // const deviceWidth = window.innerWidth * window.devicePixelRatio
+      // const deviceHeight = window.innerHeight * window.devicePixelRatio
+      // const pahserCanvas =  Phaser.CANVAS
+
       setTimeout(() => {
         const config = {
           type: Phaser.AUTO,
+          // deviceWidth,
+          // deviceHeight,
+          // pahserCanvas,
           scale: {
             parent: 'phaser-example',
             mode: Phaser.Scale.FIT,

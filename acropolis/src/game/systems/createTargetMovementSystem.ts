@@ -23,9 +23,13 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
       if (!entity || window?.acropolis?.inventory?.inventoryOpen) {
         continue;
       }
+      // console.log('position', entity.position.x, entity.position.y)
 
-      Position.x[id] = lerp(Position.x[id], entity.position.x, clientDeltaTime);
-      Position.y[id] = lerp(Position.y[id], entity.position.y, clientDeltaTime);
+      // !important the lerp is causing issues when switching tabs because delta time removing becuase its worst ATM
+      //  Position.x[id] = lerp(Position.x[id], entity.position.x, clientDeltaTime);
+      //  Position.y[id] = lerp(Position.y[id], entity.position.y, clientDeltaTime);
+      Position.x[id] = entity.position.x
+      Position.y[id] = entity.position.y
       const localEntity =
         window.acropolis.networkSystem.getLocalEntityByLocalId(id);
 
@@ -35,6 +39,7 @@ export const createTargetMovementSystem = (scene: Phaser.Scene, socket) => {
 
       // !TODO move to animation system
       const distance = getDistance(localEntity.sprites.body, entity.target);
+      // console.log('distance', distance)
       if (
         localEntity.action !== 'running' &&
         distance > 1

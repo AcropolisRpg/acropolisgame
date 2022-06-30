@@ -173,21 +173,21 @@ const resourcesFactory = (resourceCategory, x, y) => {
       entity.category = 'stone'
       entity.transform.radius = 10
       break
-    case 'metal':
-      entity.category = 'metal'
+    case 'sand':
+      entity.category = 'sand'
       break
     case 'herb':
       entity.category = 'herb'
       entity.transform.isSensor = true
       break
-    case 'leather':
-      entity.category = 'leather'
+    case 'crop':
+      entity.category = 'crop'
+      break
+    case 'animal':
+      entity.category = 'animal'
       break
     case 'fish':
       entity.category = 'fish'
-      break
-    case 'sand':
-      entity.category = 'sand'
       break
 
     default:
@@ -216,27 +216,8 @@ const trees = [
   {
     x: 550,
     y: 350
-  },
-  {
-    x: 950,
-    y: 350
-  },
-  {
-    x: 550,
-    y: 150
-  },
-  {
-    x: 550,
-    y: 850
-  },
-  {
-    x: 550,
-    y: 650
-  },
-  {
-    x: 650,
-    y: 150
   }
+
 ]
 
 const herbs = [
@@ -258,26 +239,6 @@ const herbs = [
   },
   {
     x: 880,
-    y: 880
-  },
-  {
-    x: 180,
-    y: 380
-  },
-  {
-    x: 580,
-    y: 280
-  },
-  {
-    x: 480,
-    y: 380
-  },
-  {
-    x: 580,
-    y: 980
-  },
-  {
-    x: 780,
     y: 880
   }
 ]
@@ -302,7 +263,51 @@ const stones = [
   {
     x: 330,
     y: 330
+  }
+]
+
+const sands = [{
+  x: 950,
+  y: 350
+},
+{
+  x: 550,
+  y: 150
+},
+{
+  x: 550,
+  y: 850
+},
+{
+  x: 550,
+  y: 650
+},
+{
+  x: 650,
+  y: 150
+}]
+const animals = [
+  {
+    x: 180,
+    y: 380
   },
+  {
+    x: 580,
+    y: 280
+  },
+  {
+    x: 480,
+    y: 380
+  },
+  {
+    x: 580,
+    y: 980
+  },
+  {
+    x: 780,
+    y: 880
+  }]
+const crops = [
   {
     x: 130,
     y: 330
@@ -324,6 +329,7 @@ const stones = [
     y: 330
   }
 ]
+const fishes = []
 
 // Add Resources
 const generateResources = (type, resources) => {
@@ -336,6 +342,10 @@ const generateResources = (type, resources) => {
 generateResources('tree', trees)
 generateResources('herb', herbs)
 generateResources('stone', stones)
+generateResources('sand', sands)
+generateResources('animal', animals)
+generateResources('crop', crops)
+generateResources('fish', fishes)
 
 const databaseStorageTimer = cooldownTimer(1000)
 // console.log(global.networkEntities);

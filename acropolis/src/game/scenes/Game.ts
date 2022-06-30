@@ -100,6 +100,24 @@ export default class Game extends Phaser.Scene {
     );
     loadSpritesheet(
       this,
+      'sand',
+      '/game/nature/sandy3.png',
+      FRAME_SIZE_32_32
+    );
+    loadSpritesheet(
+      this,
+      'crops',
+      '/game/fullversion/farming/crops.png',
+      FRAME_SIZE_16_16
+    );
+    loadSpritesheet(
+      this,
+      'chicken',
+      '/game/fullversion/animals/chicken_animation.png',
+      FRAME_SIZE_16_16
+    );
+    loadSpritesheet(
+      this,
       'TXprops',
       '/game/rpg-pack/Texture/TXProps.png',
       FRAME_SIZE_32_32
@@ -121,12 +139,6 @@ export default class Game extends Phaser.Scene {
         frameWidth: 49,
         frameHeight: 17
       }
-    );
-    loadSpritesheet(
-      this,
-      'backpack',
-      '/game/rpg-pack/UI/backpack.png',
-      FRAME_SIZE_32_32
     );
     loadSpritesheet(
       this,
@@ -192,7 +204,7 @@ export default class Game extends Phaser.Scene {
 
     //Disable right click context menu
     this.input.mouse.disableContextMenu();
-
+    
     setInterval(() => {
       if (
         !this.world ||
@@ -217,5 +229,6 @@ export default class Game extends Phaser.Scene {
       this.animationSystem(this.world);
 
     }, window.acropolis.timeSystem.frameRate);
+
   }
 }

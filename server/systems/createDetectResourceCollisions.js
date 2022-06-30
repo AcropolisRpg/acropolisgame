@@ -109,6 +109,86 @@ export const createDetectResourceCollision = () => {
                 }
               }
               break
+            case 'fishing':
+              if (entityB.category === 'fish') {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
+                    player.items = {}
+                  }
+                  if (!player.items.basicFish) {
+                    player.items.basicFish = {
+                      name: 'basicFish',
+                      quantity: 1
+                    }
+                  }
+                  if (player.items.basicFish) {
+                    player.items.basicFish.quantity = player.items.basicFish.quantity + 1
+                  }
+                  console.log('player Items', player.items)
+                }
+              }
+              break
+            case 'watering':
+              if (entityB.category === 'crop') {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
+                    player.items = {}
+                  }
+                  if (!player.items.basicCrop) {
+                    player.items.basicCrop = {
+                      name: 'basicCrop',
+                      quantity: 1
+                    }
+                  }
+                  if (player.items.basicCrop) {
+                    player.items.basicCrop.quantity = player.items.basicCrop.quantity + 1
+                  }
+                  console.log('player Items', player.items)
+                }
+              }
+              break
+            case 'shoveling':
+              if (entityB.category === 'sand') {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
+                    player.items = {}
+                  }
+                  if (!player.items.basicSand) {
+                    player.items.basicSand = {
+                      name: 'basicSand',
+                      quantity: 1
+                    }
+                  }
+                  if (player.items.basicSand) {
+                    player.items.basicSand.quantity = player.items.basicSand.quantity + 1
+                  }
+                  console.log('player Items', player.items)
+                }
+              }
+              break
+            case 'attack':
+              if (entityB.category === 'animal') {
+                timers[player.id].trigger()
+                if (timers[player.id].isFinished()) {
+                  if (!player.items) {
+                    player.items = {}
+                  }
+                  if (!player.items.basicLeather) {
+                    player.items.basicLeather = {
+                      name: 'basicLeather',
+                      quantity: 1
+                    }
+                  }
+                  if (player.items.basicLeather) {
+                    player.items.basicLeather.quantity = player.items.basicLeather.quantity + 1
+                  }
+                  console.log('player Items', player.items)
+                }
+              }
+              break
             default:
               break
           }
