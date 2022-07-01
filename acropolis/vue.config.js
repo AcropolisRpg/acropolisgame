@@ -1,9 +1,11 @@
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 module.exports = {
-  publicPath:  '/game',
-  // publicPath: process.env.ENVI === 'production'
-  //   ? '/game'
-  //   : '/',
+  // publicPath:  '/',
+  //  !important Production
+  // publicPath:  '/game',
+  publicPath: process.env.VUE_APP_ENVI === 'production'
+    ? '/game'
+    : '/',
     transpileDependencies: true,
     configureWebpack: {
       plugins: [

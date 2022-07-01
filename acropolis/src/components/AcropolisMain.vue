@@ -65,13 +65,15 @@ import io from 'socket.io-client';
 
 //local
 //const socket = io();
-// prod
+// !important Production
 let socket;
-if (process.env.ENVI === 'production') {
+if (process.env.VUE_APP_ENVI === 'production') {
+  console.log('el prod ')
   socket = io(window.location.origin, { path: '/gameSocket' });
 } else {
-  // socket = io();
-  socket = io(window.location.origin, { path: '/gameSocket' });
+    console.log('sin prod ')
+  socket = io();
+  // socket = io(window.location.origin, { path: '/gameSocket' });
 }
 
 // import TitleScreen from '../game/scenes/TileScreen'
