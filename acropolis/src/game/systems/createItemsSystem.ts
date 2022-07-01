@@ -86,6 +86,15 @@ export const createItemsSystem = (scene: Phaser.Scene) => {
       case 'basicHerb':
         entity.sprites.items[key].sprite.setFrame(16 * 18);
         break;
+      case 'basicLeather':
+        entity.sprites.items[key].sprite.setFrame(16 * 55 - 4);
+        break;
+      case 'basicCrop':
+        entity.sprites.items[key].sprite.setFrame(16 * 19 + 6);
+        break;
+      case 'basicSand':
+        entity.sprites.items[key].sprite.setFrame(16 * 60 - 11);
+        break;
       default:
         break;
     }

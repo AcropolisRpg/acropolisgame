@@ -1,5 +1,12 @@
 const playerPlayAnimation = (scene, animationKey, playerInstance) => {
-
+  window.acropolis.walking.stop()
+  window.acropolis.sword.stop()
+  window.acropolis.wood.stop()
+  window.acropolis.pickaxe.stop()
+  window.acropolis.fishing.stop()
+  window.acropolis.watering.stop()
+  window.acropolis.gathering.stop()
+  window.acropolis.shoveling.stop()
   switch (animationKey) {
     case 'running':
 
@@ -13,6 +20,19 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'runningClothes'
       })
+      // setInterval( ()=>{
+      //   scene.sound.play('playerStep');
+      // },150)
+     
+      window.acropolis.walking.play()
+
+      // playerInstance.sprites.body.on('animationrepeat', function () {
+      //   if(playerInstance.sprites.body.anims.currentAnim.key === 'running') {
+      //     scene.sound.stop('playerStep')
+      //     scene.sound.resume('playerStep');
+      //     // console.log('correindolachis')
+      //   }
+      // });
       break
     case 'idle':
       playerInstance.sprites.body.play({ key: 'idle' })
@@ -37,6 +57,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'attackClothes'
       })
+      window.acropolis.sword.play()
       break
     case 'mining':
       playerInstance.sprites.body.play({ key: 'mining' })
@@ -49,6 +70,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'miningClothes'
       })
+      window.acropolis.pickaxe.play()
       break
     case 'gathering':
       playerInstance.sprites.body.play({ key: 'gathering' })
@@ -61,6 +83,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'gatheringClothes'
       })
+      window.acropolis.gathering.play()
       break
     case 'chopping':
       playerInstance.sprites.body.play({ key: 'chopping' })
@@ -73,6 +96,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'choppingClothes'
       })
+      window.acropolis.wood.play()
       break
     case 'fishing':
       playerInstance.sprites.body.play({ key: 'fishing' })
@@ -85,6 +109,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'fishingClothes'
       })
+      window.acropolis.fishing.play()
       break
     case 'watering':
       playerInstance.sprites.body.play({ key: 'watering' })
@@ -97,6 +122,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'wateringClothes'
       })
+      window.acropolis.watering.play()
       break
     case 'shoveling':
       playerInstance.sprites.body.play({ key: 'shoveling' })
@@ -109,6 +135,7 @@ const playerPlayAnimation = (scene, animationKey, playerInstance) => {
       playerInstance.sprites.clothes.play({
         key: 'shovelingClothes'
       })
+      window.acropolis.shoveling.play()
       break
 
     default:

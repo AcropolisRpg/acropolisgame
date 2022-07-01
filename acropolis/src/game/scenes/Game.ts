@@ -3,7 +3,8 @@ import loadingBar from '../systems/loadingBar';
 import {
   loadImage,
   loadTilemapTiledJSON,
-  loadSpritesheet
+  loadSpritesheet,
+  loadAudio
 } from '../phaserHelper/loaders';
 import { FRAME_SIZE_32_32, FRAME_SIZE_96_96, FRAME_SIZE_16_16, FRAME_SIZE_64_64 } from '../constants/constants';
 import animatedPlayer from '../systems/playerSpritesheetAnimations';
@@ -161,8 +162,146 @@ export default class Game extends Phaser.Scene {
       '/game/icons/icons_full_32.png',
       FRAME_SIZE_32_32
     );
+    loadAudio(this,'playerStep', '/game/sound/grassfootstep.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerSword', '/game/sound/sword1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerWood', '/game/sound/chopppingwood1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerPickaxe', '/game/sound/pickaxe1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerFishing', '/game/sound/fishing1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerWatering', '/game/sound/watering1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerGathering', '/game/sound/bush1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerShoveling', '/game/sound/shoveling1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerHurt', '/game/sound/damage1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'playerBody', '/game/sound/body1hit.mp3', {
+      instances: 1
+    });
+    loadAudio(this,'music', '/game/music/tavernaloop.mp3', {
+      instances: 1
+    });
   }
   create() {
+    window.acropolis.walking = this.sound.add('playerStep', {
+      mute: false,
+      volume: 0.3,
+      rate: 2.3,
+      detune: -0.5,
+      seek: 0,
+      loop: true,
+      delay: 0
+  });
+  window.acropolis.sword = this.sound.add('playerSword', {
+    mute: false,
+    volume: 0.2,
+    rate: 2.0,
+    detune: 0,
+    seek: 0,
+    loop: true,
+    delay: 0
+});
+window.acropolis.wood = this.sound.add('playerWood', {
+  mute: false,
+  volume: 0.4,
+  rate: 1,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+});
+window.acropolis.pickaxe = this.sound.add('playerPickaxe', {
+  mute: false,
+  volume: 0.8,
+  rate: 0.8,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+});
+window.acropolis.fishing = this.sound.add('playerFishing', {
+  mute: false,
+  volume: 1,
+  rate: 0.6,
+  detune: 0,
+  seek: 0,
+  loop: false,
+  delay: 0
+});
+window.acropolis.watering = this.sound.add('playerWatering', {
+  mute: false,
+  volume: 1,
+  rate: 0.6,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+});
+window.acropolis.gathering = this.sound.add('playerGathering', {
+  mute: false,
+  volume: 1,
+  rate: 0.6,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+});
+window.acropolis.shoveling = this.sound.add('playerShoveling', {
+  mute: false,
+  volume: 1,
+  rate: 0.7,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+});
+window.acropolis.hurt = this.sound.add('playerHurt', {
+  mute: false,
+  volume: 0.3,
+  rate: 0.7,
+  detune: 0,
+  seek: 0,
+  loop: false,
+  delay: 0
+});
+window.acropolis.body = this.sound.add('playerBody', {
+  mute: false,
+  volume: 0.3,
+  rate: 0.7,
+  detune: 0,
+  seek: 0,
+  loop: false,
+  delay: 0
+});
+window.acropolis.music = this.sound.add('music', {
+  mute: false,
+  volume: 0.4,
+  rate: 1,
+  detune: 0,
+  seek: 0,
+  loop: true,
+  delay: 0
+});
+setTimeout(()=>{
+  console.log('empieza la musica')
+  window.acropolis.music.play()
+
+}, 3000)
+    // this.sound.mute = true
     this.world = createWorld();
     this.timeSystem = createTimeSystem();
     this.entitySystem = createEntitySystem();

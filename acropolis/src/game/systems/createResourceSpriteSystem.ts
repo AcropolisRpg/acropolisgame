@@ -22,23 +22,19 @@ export const createResourceSpriteSystem = (scene: Phaser.Scene) => {
       }
 
       if (entity.category === 'herb') {
-        console.log('pintalamadre')
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y - 5, 'globalNature');
         entity.sprites.body.setFrame(60)
         entity.sprites.body.setScale(2)
       }
       if (entity.category === 'stone') {
-        console.log('pintalamadre')
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'TXprops');
         entity.sprites.body.setFrame(245)
       }
       if (entity.category === 'sand') {
-        console.log('pintalamadre')
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'sand');
         // entity.sprites.body.setFrame(4)
       }
       if (entity.category === 'animal') {
-        console.log('pintalamadre234')
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'chicken');
         entity.sprites.body.setFrame(4)
         const animatedChicken = {
@@ -59,7 +55,6 @@ export const createResourceSpriteSystem = (scene: Phaser.Scene) => {
 
       }
       if (entity.category === 'crop') {
-        console.log('pintalamadre234')
         entity.sprites.body = scene.add.sprite(entity.position.x, entity.position.y + 5, 'crops');
         entity.sprites.body.setFrame(4)
         const animatedCrop = {

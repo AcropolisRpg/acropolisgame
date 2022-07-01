@@ -26,6 +26,17 @@ export const createHealthBarSystem = (scene: Phaser.Scene) => {
       const entity = getLocalEntityByLocalId(id);
       const networkEntity = window.acropolis.networkSystem.getNetworkEntityByLocalId(id)
       if(networkEntity.healthPoints < 100) {
+        if(entity.healthPoints > networkEntity.healthPoints){
+          if(!window.acropolis.hurt.isPlaying) {
+            window.acropolis.hurt.stop()
+            window.acropolis.hurt.play()
+            window.acropolis.body.stop()
+            window.acropolis.body.play()
+          }
+        }
+        // setTimeout(()=>{
+
+        // },5000)
         // console.log('orale perro', entity.healthPoints)
         const multiplier = networkEntity.healthPoints/100
         entity.healthPoints = networkEntity.healthPoints

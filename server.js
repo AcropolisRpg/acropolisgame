@@ -157,37 +157,81 @@ const resourcesFactory = (resourceCategory, x, y) => {
     id: entityId,
     position,
     type: 'resource',
-    transform: Matter.Bodies.circle(position.x, position.y, 16, {
-      isStatic: true
-    }),
-    sensor: Matter.Bodies.circle(position.x, position.y, 32, {
-      isStatic: true,
-      isSensor: true
-    })
+    transform: {},
+    sensor: {}
   }
   switch (resourceCategory) {
     case 'tree':
       entity.category = 'tree'
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 10, {
+        isStatic: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       break
     case 'stone':
       entity.category = 'stone'
-      entity.transform.radius = 10
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 14, {
+        isStatic: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       break
     case 'sand':
       entity.category = 'sand'
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 14, {
+        isStatic: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       break
     case 'herb':
       entity.category = 'herb'
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 16, {
+        isStatic: true,
+        isSensor: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       entity.transform.isSensor = true
       break
     case 'crop':
       entity.category = 'crop'
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 5, {
+        isStatic: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       break
     case 'animal':
       entity.category = 'animal'
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 5, {
+        isStatic: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       break
     case 'fish':
       entity.category = 'fish'
+      entity.transform = Matter.Bodies.circle(position.x, position.y, 16, {
+        isStatic: true
+      })
+      entity.sensor = Matter.Bodies.circle(position.x, position.y, 32, {
+        isStatic: true,
+        isSensor: true
+      })
       break
 
     default:

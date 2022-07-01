@@ -11,3 +11,7 @@ export const loadTilemapTiledJSON = (scene, key, url) => {
 export const loadSpritesheet = (scene, key, url, frameSizing) => {
   return scene.load.spritesheet(key, pathHandler(url), frameSizing)
 }
+
+export const loadAudio = (scene, key, url, data) => {
+  return scene.load.audio(key, pathHandler(url), data)
+}
