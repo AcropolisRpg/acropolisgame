@@ -11,6 +11,8 @@ export const createSkillsSystem = (scene) => {
           console.log('crea el puto skill');
           localEntity.skill = {};
           localEntity.sprites.skill = scene.add.sprite(entity.skillPosition.x, entity.skillPosition.y, 'balla')
+          window.acropolis.stoneShield.play()
+
         }
       } 
       else if (localEntity?.skill) {

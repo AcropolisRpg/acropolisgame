@@ -5,12 +5,12 @@ import {
 } from '../components/components.js'
 import { defineQuery, defineSystem, enterQuery } from 'bitecs'
 import Matter from 'matter-js'
-import { getDistance, lerp } from '../utils/utils.js'
+import { cooldownTimer, getDistance, lerp } from '../utils/utils.js'
 
 export const createPlayerTargetMovementSystem = () => {
   const moveEntityQuery = defineQuery([TransformRectangle, TargetPosition, Position])
   const moveEntityQueryEnter = enterQuery(moveEntityQuery)
-
+  const timers = {}
   // TODO Agregar la entidad a la lista de modificados
   // TODO y leer esa lista al final del network y enviarla a todos los clientes.
   return defineSystem((world) => {
@@ -41,8 +41,29 @@ export const createPlayerTargetMovementSystem = () => {
       // }
       const playerPosition = global.networkEntities[global.entitiesByLocalId[id]].transform.position
       if (getDistance(networkEntity.target, playerPosition) > 1) {
+        let isDashing = false
         const dt = global.dt
-        const force = 1 * dt
+        if (!timers[id]) {
+          timers[id] = cooldownTimer(2500)
+          console.log('entrta la 1235', timers[id], id)
+        }
+        timers[id].timeCounter(global.deltaTime)
+        if (timers[id]?.timer?.isReady && global.networkEntities[global.entitiesByLocalId[id]].dash && !isDashing) {
+          isDashing = true
+
+          // console.log('entrta la madre')
+          timers[id].trigger()
+        }
+        if (isDashing) {
+          global.networkEntities[global.entitiesByLocalId[id]].dash = false
+        }
+        const dash = (timers[id]?.timer?.triggered && timers[id]?.timer?.currentTime > 2000) ? 3 : 1
+        // console.log('entrta la asdfasdf', timers[id])
+        if (timers[id]?.isFinished()) {
+          isDashing = false
+          global.networkEntities[global.entitiesByLocalId[id]].dash = false
+        }
+        const force = 1 * dt * dash
 
         const deltaVector = Matter.Vector.sub(
           playerPosition,

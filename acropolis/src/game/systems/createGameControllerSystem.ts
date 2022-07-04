@@ -3,7 +3,7 @@ import { cooldownTimer } from '../utils/cooldownTimer';
 
 const createGameControllerSystem = (scene: Phaser.Scene, socket) => {
   // const currentPlayer = player;
-  const inputKeys = 'Q,W,E,R,A,S,D,F';
+  const inputKeys = 'Q,W,E,R,A,S,D,F,T,G,ONE,TWO,THREE';
   const keys: any = scene.input.keyboard.addKeys(inputKeys);
   const inputKeysList = inputKeys.split(',');
   const cooldownTime = cooldownTimer(100);
@@ -23,13 +23,13 @@ const createGameControllerSystem = (scene: Phaser.Scene, socket) => {
       const key = inputKeysList[i];
       if (keys[key].isDown) {
         switch (key) {
-          case 'Q':
+          case 'ONE':
             if (cooldownTime.timer.isReady) {
               cooldownTime.trigger()
-              socket.emit('playerTarget', {
-                x: currentPlayer.position.x,
-                y: currentPlayer.position.y
-              });
+              // socket.emit('playerTarget', {
+              //   x: currentPlayer.position.x,
+              //   y: currentPlayer.position.y
+              // });
               socket.emit('playerAction', 'skill');
               socket.emit('playerSkillPosition', {
                 x: activePointer.worldX,
@@ -118,6 +118,27 @@ const createGameControllerSystem = (scene: Phaser.Scene, socket) => {
             }
             currentPlayer.action = 'shoveling';
             break;
+          case 'TWO':
+              console.log('checando')
+              if (cooldownTime.timer.isReady) {
+                cooldownTime.trigger()
+                socket.emit('playerAction', 'shoot');
+                socket.emit('playerShootingPosition', {
+                  x: activePointer.worldX,
+                  y: activePointer.worldY
+                });
+              }
+              currentPlayer.action = 'shoot';
+  
+              break;
+              case 'THREE':
+                console.log('checando')
+                if (cooldownTime.timer.isReady) {
+                  cooldownTime.trigger()
+                  socket.emit('playerDash');
+                }
+                currentPlayer.action = 'dash';
+                break;
           default:
             break;
         }

@@ -67,14 +67,14 @@ import io from 'socket.io-client';
 //const socket = io();
 // !important Production
 let socket;
-if (process.env.VUE_APP_ENVI === 'production') {
-  console.log('el prod ')
+// if (process.env.VUE_APP_ENVI === 'production') {
+//   console.log('el prod ')
   socket = io(window.location.origin, { path: '/gameSocket' });
-} else {
-    console.log('sin prod ')
-  socket = io();
-  // socket = io(window.location.origin, { path: '/gameSocket' });
-}
+// } else {
+//     console.log('sin prod ')
+//   socket = io();
+//   // socket = io(window.location.origin, { path: '/gameSocket' });
+// }
 
 // import TitleScreen from '../game/scenes/TileScreen'
 import Web3 from 'web3';

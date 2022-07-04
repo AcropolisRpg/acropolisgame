@@ -17,6 +17,7 @@ import { createDetectResourceCollision } from './server/systems/createDetectReso
 import monk from 'monk'
 import { cooldownTimer } from './server/utils/utils.js'
 import { createSkillSystem } from './server/systems/createSkillsSystem.js'
+import { createShootingSystem } from './server/systems/createShootingSystem.js'
 
 const url = 'localhost:27017/game'
 const db = monk(url)
@@ -83,6 +84,7 @@ const resourceSystem = createResourceSystem(engine)
 const playerTransformSystem = createPlayerTransformSystem(engine)
 const playerTargetMovementSystem = createPlayerTargetMovementSystem(engine)
 const skillSystem = createSkillSystem(engine)
+const shootSystem = createShootingSystem(engine)
 const detectResourceCollision = createDetectResourceCollision()
 const destroyEntitiesSystem = createDestroyEntitiesSystem()
 const broadcastNetworkSystem = createBroadcastNetworkSystem()
@@ -446,6 +448,7 @@ setInterval(async () => {
   playerTransformSystem(world)
   playerTargetMovementSystem(world)
   skillSystem(world)
+  shootSystem(world)
   detectResourceCollision(world)
   destroyEntitiesSystem()
   broadcastNetworkSystem(world)
@@ -556,6 +559,14 @@ io.on('connection', (socket) => {
       socket.on('playerSkillPosition', (coordinates) => {
         console.log('skillPosition', coordinates, entityId)
         global.networkEntities[entityId].skillPosition = coordinates
+      })
+      socket.on('playerShootingPosition', (coordinates) => {
+        console.log('shootingPosition', coordinates, entityId)
+        global.networkEntities[entityId].shootPosition = coordinates
+      })
+      socket.on('playerDash', () => {
+        console.log('playerDash')
+        global.networkEntities[entityId].dash = true
       })
     }
   })

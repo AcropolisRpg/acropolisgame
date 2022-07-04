@@ -30,6 +30,18 @@ export const createDetectResourceCollision = () => {
           }
         }
 
+        if (
+          player?.transform &&
+          entityB?.activeShooting &&
+          Matter.Collision.collides(player.transform, entityB.activeShooting) !== null
+        ) {
+          console.log(' le parte su madre', player.healthPoints)
+          player.healthPoints -= 1
+          if (player.healthPoints <= 1) {
+            player.healthPoints = 100
+          }
+        }
+
         if (player.id === entityB.id) {
           continue
         }

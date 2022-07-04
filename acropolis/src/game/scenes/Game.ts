@@ -20,6 +20,7 @@ import { createResourceSpriteSystem } from '../systems/createResourceSpriteSyste
 import { createHealthBarSystem } from '../systems/createHealthBarSystem';
 import { createItemsSystem } from '../systems/createItemsSystem';
 import { createSkillsSystem } from '../systems/createSkillsSystem';
+import { createShootingSystem } from '../systems/createShootingSystem';
 
 declare global {
   interface Window {
@@ -39,6 +40,7 @@ export default class Game extends Phaser.Scene {
   private healthBarSystem;
   private itemsSystem;
   private skillsSystem
+  private shootingSystem
 
   init(data) {
     this.lobbyScene = {};
@@ -158,6 +160,15 @@ export default class Game extends Phaser.Scene {
     );
     loadSpritesheet(
       this,
+      'fireball',
+      '/game/skill/fireball4.png',
+      {
+        frameWidth: 1024,
+        frameHeight: 1024
+      }
+    );
+    loadSpritesheet(
+      this,
       'icons',
       '/game/icons/icons_full_32.png',
       FRAME_SIZE_32_32
@@ -195,11 +206,17 @@ export default class Game extends Phaser.Scene {
     loadAudio(this,'music', '/game/music/tavernaloop.mp3', {
       instances: 1
     });
+    loadAudio(this,'playerFireball', '/game/sound/fireball1hit.mp3', {
+      instances: 1
+    });
+      loadAudio(this,'playerStoneShield', '/game/sound/stoneshield1hit.mp3', {
+      instances: 1
+    });
   }
   create() {
     window.acropolis.walking = this.sound.add('playerStep', {
       mute: false,
-      volume: 0.3,
+      volume: 0.5,
       rate: 2.3,
       detune: -0.5,
       seek: 0,
@@ -222,6 +239,15 @@ window.acropolis.wood = this.sound.add('playerWood', {
   detune: 0,
   seek: 0,
   loop: true,
+  delay: 0
+});
+window.acropolis.stoneShield = this.sound.add('playerStoneShield', {
+  mute: false,
+  volume: 0.5,
+  rate: 1.2,
+  detune: -1200,
+  seek: 0,
+  loop: false,
   delay: 0
 });
 window.acropolis.pickaxe = this.sound.add('playerPickaxe', {
@@ -278,6 +304,15 @@ window.acropolis.hurt = this.sound.add('playerHurt', {
   loop: false,
   delay: 0
 });
+window.acropolis.fireball = this.sound.add('playerFireball', {
+  mute: false,
+  volume: 0.3,
+  rate: 0.7,
+  detune: 0,
+  seek: 0,
+  loop: false,
+  delay: 0
+});
 window.acropolis.body = this.sound.add('playerBody', {
   mute: false,
   volume: 0.3,
@@ -316,6 +351,7 @@ setTimeout(()=>{
       'shoesSpriteSheet'
     ]);
     this.skillsSystem = createSkillsSystem(this)
+    this.shootingSystem = createShootingSystem(this)
     this.healthBarSystem = createHealthBarSystem(this)
     this.animationSystem = createAnimationSystem(this);
     this.targetMovementSystem = createTargetMovementSystem(
@@ -339,35 +375,38 @@ setTimeout(()=>{
     animatedPlayer(this);
 
     //Restrict camera maximum movement
-    this.cameras.main.setBounds(0, 0, 1000, 1000);
+    this.cameras.main.setBounds(-500, -500, 10000, 10000);
 
     //Disable right click context menu
     this.input.mouse.disableContextMenu();
     
     setInterval(() => {
-      if (
-        !this.world ||
-        !this.spriteSystem ||
-        !this.entitySystem ||
-        !this.targetMovementSystem ||
-        !this.timeSystem
-      ) {
-        // console.log('entra aca', !this.world || !this.spriteSystem || this.playerSystem || this.targetMovementSystem)
-        return;
-      }
-      this.itemsSystem(this.world)
-      this.timeSystem(this.world);
-      this.entitySystem(this.world);
-      this.spriteSystem(this.world);
-      this.healthBarSystem(this.world)
-      this.resourceSpriteSystem(this.world)
-      this.skillsSystem(this.world)
-
-      this.targetMovementSystem(this.world);
-      this.gameControllerSystem(this.world);
-      this.animationSystem(this.world);
+   
 
     }, window.acropolis.timeSystem.frameRate);
 
+  }
+  update () {
+    if (
+      !this.world ||
+      !this.spriteSystem ||
+      !this.entitySystem ||
+      !this.targetMovementSystem ||
+      !this.timeSystem
+    ) {
+      // console.log('entra aca', !this.world || !this.spriteSystem || this.playerSystem || this.targetMovementSystem)
+      return;
+    }
+    this.itemsSystem(this.world)
+    this.timeSystem(this.world);
+    this.entitySystem(this.world);
+    this.spriteSystem(this.world);
+    this.healthBarSystem(this.world)
+    this.resourceSpriteSystem(this.world)
+    this.skillsSystem(this.world)
+    this.shootingSystem(this.world)
+    this.targetMovementSystem(this.world);
+    this.gameControllerSystem(this.world);
+    this.animationSystem(this.world);
   }
 }
